@@ -1,26 +1,392 @@
-<!doctype html>
-<html lang="en">
-  <head>
-  <title>@alsy0055</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">  
-    <style>
-    
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mandarin First Steps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap">
+<style>
+/* Layout: one reading column; sticky control bar; each section is a list of tap-to-hear rows with pinyin set above every character (ruby). */
+:root{
+  --bg:#f4f6f5; --surface:#ffffff; --fg:#18201d; --muted:#56625e; --line:#dbe2df; --accent:#0d7a60; --accent-ink:#ffffff; --chip:#e7eeeb;
+  --t1:#c0262d; --t2:#1f7a33; --t3:#1557b0; --t4:#7a2aa0; --t5:#6a716e;
+  --han:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26;
+  --t1:#ff7b73; --t2:#74d68a; --t3:#7ab6ff; --t4:#d79bf7; --t5:#a3aca8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26;
+  --t1:#ff7b73; --t2:#74d68a; --t3:#7ab6ff; --t4:#d79bf7; --t5:#a3aca8; color-scheme:dark}
 
- body {
-        background-color: #222222;
-        color: #FFFFFF;
-      }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2{font-family:var(--han);text-wrap:balance;margin:0}
+a{color:var(--accent)}
+button,input,label{font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:12px 10px;display:flex;flex-direction:column;gap:10px}
+.titlerow{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
+h1{font-size:24px;letter-spacing:.01em}
+h1 .zh{color:var(--accent);margin-left:6px}
+.total{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toggle{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px;min-height:34px}
+.toggle[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.voice{font-size:12px;color:var(--muted)}
+.voice.warn{color:var(--t1)}
+nav.sections{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+nav.sections a{flex:none;text-decoration:none;color:var(--fg);background:var(--chip);border-radius:999px;padding:4px 11px;font-size:13px;white-space:nowrap}
+nav.sections a:hover{background:var(--line)}
 
+section{padding-top:28px;scroll-margin-top:140px}
+.sechead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:6px}
+h2{font-size:21px}
+.prog{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.intro{color:var(--muted);margin:0 0 12px;max-width:66ch}
 
-    </style>
-  </head>
-  <body>
-    <h1>Sorry, the site is under construction, this is my cat working on it</h1>
- <img src="https://media.tenor.com/y4Ie8h0H-TwAAAAC/cat-typing.gif" alt="Sorry, if this text shows up then it means the cat gif source file is ded">     
-  
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row.known .han{opacity:.55}
+.play{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--chip);color:var(--fg);cursor:pointer;display:grid;place-items:center;flex:none}
+.play:hover{border-color:var(--accent);color:var(--accent)}
+.play svg{width:16px;height:16px}
+.body{min-width:0;display:flex;flex-direction:column;gap:2px}
+.han{font-family:var(--han);font-size:25px;line-height:1.9;overflow-wrap:anywhere}
+.han ruby{ruby-position:over;margin-right:.08em}
+.han rt{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.01em}
+.han .lat{font-family:var(--sans);font-size:20px}
+.t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t5{color:var(--t5)}
+.en{font-size:14px;color:var(--muted);background:none;border:0;padding:0;text-align:left;cursor:default}
+.note{font-size:12.5px;color:var(--muted)}
+.know{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none}
+.know input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
 
+body.hide-py .han rt{visibility:hidden}
+body.hide-en .en{filter:blur(5px);cursor:pointer}
+body.hide-en .en.shown{filter:none}
 
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;color:var(--fg)}
+.tile:hover{border-color:var(--accent)}
+.tile .lab{font-weight:700;font-size:18px}
+.tile .ex{font-family:var(--han);font-size:20px}
+.tile .ex small{font-family:var(--sans);font-size:12px;margin-left:4px}
+.tile .hint{font-size:12px;color:var(--muted);line-height:1.35}
+.tones .tile .lab{font-family:var(--han);font-size:30px}
+h3{font-size:15px;margin:18px 0 8px}
 
-  </body>
-</html>
+.rules{display:flex;flex-direction:column;gap:8px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center}
+.rule p{margin:0}
+.rule b{font-weight:600}
+
+.phases{display:flex;flex-direction:column;gap:10px;counter-reset:ph}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.phase h4{margin:0 0 4px;font-size:15px}
+.phase .when{font-size:12.5px;color:var(--accent);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.phase ul{margin:6px 0 0;padding-left:18px}
+.phase li{margin:2px 0}
+.fine{font-size:12.5px;color:var(--muted);margin-top:10px}
+
+@media (max-width:480px){
+  .han{font-size:22px}
+  .know span{display:none}
+  section{scroll-margin-top:170px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="titlerow">
+      <h1>Mandarin First Steps <span class="zh">中文第一步</span></h1>
+      <span class="total" id="total"></span>
+    </div>
+    <div class="controls">
+      <button class="toggle" id="slow" aria-pressed="false" type="button">Slow audio</button>
+      <button class="toggle" id="hidePy" aria-pressed="false" type="button">Hide pinyin</button>
+      <button class="toggle" id="hideEn" aria-pressed="false" type="button">Hide meaning</button>
+      <span class="voice" id="voice">Checking for a Chinese voice…</span>
+    </div>
+    <nav class="sections" aria-label="Sections">
+      <a href="#tones">Tones</a><a href="#sounds">Sounds</a><a href="#greetings">Greetings</a><a href="#intro">Introduce yourself</a><a href="#survival">Survival</a><a href="#numbers">Numbers</a><a href="#core">Core words</a><a href="#work">At work</a><a href="#roadmap">Roadmap</a>
+    </nav>
+  </header>
+
+  <section id="tones">
+    <div class="sechead"><h2>The four tones + neutral</h2></div>
+    <p class="intro">The same syllable means different things depending on pitch. Colors on this page follow the tone: <span class="t1">1st</span>, <span class="t2">2nd</span>, <span class="t3">3rd</span>, <span class="t4">4th</span>, <span class="t5">neutral</span>. Tap each one and copy the pitch out loud.</p>
+    <div class="tiles tones" id="toneTiles"></div>
+    <h3>Tone changes in real speech</h3>
+    <div class="rules" id="rules"></div>
+  </section>
+
+  <section id="sounds">
+    <div class="sechead"><h2>Sounds: initials and finals</h2></div>
+    <p class="intro">A syllable is an initial (start sound) plus a final (end sound), plus a tone. Tap a tile to hear an example word. Spend the most time on the tricky ones: q, x, j, zh, ch, sh, r, z, c and ü.</p>
+    <h3>Initials</h3>
+    <div class="tiles" id="initials"></div>
+    <h3>Finals</h3>
+    <div class="tiles" id="finals"></div>
+  </section>
+
+  <section id="greetings"><div class="sechead"><h2>Greetings</h2><span class="prog" data-prog="greetings"></span></div><div class="list" data-list="greetings"></div></section>
+  <section id="intro"><div class="sechead"><h2>Introduce yourself</h2><span class="prog" data-prog="intro"></span></div><p class="intro">Name, where you're from, age and job: the usual first conversation.</p><div class="list" data-list="intro"></div></section>
+  <section id="survival"><div class="sechead"><h2>Survival phrases</h2><span class="prog" data-prog="survival"></span></div><p class="intro">For when you're stuck in a conversation, which will be often at first. That's normal.</p><div class="list" data-list="survival"></div></section>
+  <section id="numbers"><div class="sechead"><h2>Numbers</h2><span class="prog" data-prog="numbers"></span></div><p class="intro">Numbers 11–99 are built from these: 十一 is "ten-one", 三十 is "three-ten".</p><div class="list" data-list="numbers"></div></section>
+  <section id="core"><div class="sechead"><h2>Core words</h2><span class="prog" data-prog="core"></span></div><p class="intro">Some of the most frequent words in everyday Mandarin. Most sentences you meet early on are built from these.</p><div class="list" data-list="core"></div></section>
+  <section id="work"><div class="sechead"><h2>At work</h2><span class="prog" data-prog="work"></span></div><p class="intro">A head start for GA and operations conversations.</p><div class="list" data-list="work"></div></section>
+
+  <section id="roadmap">
+    <div class="sechead"><h2>Roadmap to HSK 4</h2></div>
+    <p class="intro">A rough guide. Timing depends on daily hours. The 2026 HSK standard puts HSK 4 at about 2,000 words, more than the old version.</p>
+    <div class="phases">
+      <div class="phase"><div class="when">Weeks 1–3</div><h4>Pinyin and tones</h4><ul><li>Tones and Sounds sections above, until you can say each tile without looking.</li><li>Shadowing: play a phrase, pause, repeat it with the same melody.</li></ul></div>
+      <div class="phase"><div class="when">Months 1–3</div><h4>Survival Mandarin (HSK 1 level)</h4><ul><li>Greetings, introduction, survival phrases and core words on this page.</li><li>Basic patterns: 是 sentences, 吗 questions, 不 / 没 negation, the measure word 个, time before the verb (我明天去).</li><li>Start an HSK 1 deck in Anki: about 15 minutes a day.</li></ul></div>
+      <div class="phase"><div class="when">Months 3–9</div><h4>HSK 2–3: real input</h4><ul><li>A textbook series mapped to HSK (ask your friend which edition learners use now).</li><li>Graded readers, and video with Chinese + English subtitles together (the Language Reactor extension does this on YouTube and Netflix). Peppa Pig in Mandarin, 小猪佩奇, is a classic beginner show.</li><li>Speak every week: your friend and your Discord servers. Awkward is fine.</li></ul></div>
+      <div class="phase"><div class="when">Months 9–24</div><h4>HSK 4 and workplace Mandarin</h4><ul><li>HSK 4 vocabulary, mock tests, then the exam.</li><li>Work vocabulary for GA and operations: meetings, schedules, repairs, vendors.</li><li>Add "Mandarin (HSK level)" to your CV and LinkedIn as soon as you pass any level.</li></ul></div>
+    </div>
+    <h3>Daily routine (40 minutes)</h3>
+    <div class="rules">
+      <div class="rule"><span class="prog">15 min</span><p><b>Anki flashcards.</b> New words plus reviews. Don't skip a day; reviews pile up.</p></div>
+      <div class="rule"><span class="prog">15 min</span><p><b>Listening.</b> This page, a lesson, or a show with dual subtitles.</p></div>
+      <div class="rule"><span class="prog">10 min</span><p><b>Speaking.</b> Shadow phrases aloud, or message your friend in Mandarin.</p></div>
+    </div>
+    <h3>Tools</h3>
+    <div class="rules">
+      <div class="rule"><span class="prog">Dictionary</span><p><a href="https://www.pleco.com/" target="_blank" rel="noopener">Pleco</a>: the standard Chinese dictionary app, free.</p></div>
+      <div class="rule"><span class="prog">Flashcards</span><p><a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">Anki</a>: spaced repetition. Search its shared decks for "HSK".</p></div>
+      <div class="rule"><span class="prog">Video</span><p><a href="https://www.languagereactor.com/" target="_blank" rel="noopener">Language Reactor</a>: two subtitle lines at once, with pinyin.</p></div>
+    </div>
+    <p class="fine">Audio uses your device's built-in Chinese voice. It's good for practice, but a real speaker (your friend) is the final reference for tones.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  var DATA = {
+    greetings: [
+      ["你好","nǐ hǎo","Hello","Two 3rd tones: said ní hǎo"],
+      ["您好","nín hǎo","Hello (polite: elders, clients, bosses)"],
+      ["早上好","zǎo shang hǎo","Good morning"],
+      ["晚上好","wǎn shang hǎo","Good evening"],
+      ["你好吗？","nǐ hǎo ma","How are you?"],
+      ["我很好，你呢？","wǒ hěn hǎo nǐ ne","I'm good, and you?"],
+      ["谢谢","xiè xie","Thank you"],
+      ["不客气","bú kè qi","You're welcome"],
+      ["对不起","duì bu qǐ","Sorry"],
+      ["没关系","méi guān xi","It's okay / never mind"],
+      ["请问","qǐng wèn","Excuse me, may I ask…"],
+      ["好久不见","hǎo jiǔ bú jiàn","Long time no see"],
+      ["再见","zài jiàn","Goodbye"]
+    ],
+    intro: [
+      ["你叫什么名字？","nǐ jiào shén me míng zi","What's your name?"],
+      ["我叫Isaac。","wǒ jiào","My name is Isaac."],
+      ["认识你很高兴。","rèn shi nǐ hěn gāo xìng","Nice to meet you."],
+      ["你是哪国人？","nǐ shì nǎ guó rén","Which country are you from?"],
+      ["我是印度尼西亚人。","wǒ shì yìn dù ní xī yà rén","I'm Indonesian."],
+      ["我住在雅加达。","wǒ zhù zài yǎ jiā dá","I live in Jakarta."],
+      ["你今年多大？","nǐ jīn nián duō dà","How old are you?"],
+      ["我今年三十岁。","wǒ jīn nián sān shí suì","I'm thirty this year."],
+      ["你做什么工作？","nǐ zuò shén me gōng zuò","What do you do for work?"],
+      ["我是老师。","wǒ shì lǎo shī","I'm a teacher."],
+      ["我是工程师。","wǒ shì gōng chéng shī","I'm an engineer."],
+      ["我在学中文。","wǒ zài xué zhōng wén","I'm learning Chinese."],
+      ["我的中文不太好。","wǒ de zhōng wén bú tài hǎo","My Chinese isn't very good (yet)."]
+    ],
+    survival: [
+      ["请再说一遍。","qǐng zài shuō yí biàn","Please say it again."],
+      ["请说慢一点。","qǐng shuō màn yì diǎn","Please speak a bit slower."],
+      ["我听不懂。","wǒ tīng bu dǒng","I don't understand (what I hear)."],
+      ["什么意思？","shén me yì si","What does it mean?"],
+      ["这个用中文怎么说？","zhè ge yòng zhōng wén zěn me shuō","How do you say this in Chinese?"],
+      ["我不知道。","wǒ bù zhī dào","I don't know."],
+      ["对。","duì","Right / correct."],
+      ["没问题。","méi wèn tí","No problem."]
+    ],
+    numbers: [
+      ["零","líng","0"],["一","yī","1"],["二","èr","2"],["三","sān","3"],["四","sì","4"],["五","wǔ","5"],
+      ["六","liù","6"],["七","qī","7"],["八","bā","8"],["九","jiǔ","9"],["十","shí","10"],
+      ["十一","shí yī","11"],["二十","èr shí","20"],["三十","sān shí","30"],["一百","yì bǎi","100"],
+      ["两个","liǎng ge","Two (of something): use 两, not 二, before a measure word"]
+    ],
+    core: [
+      ["我","wǒ","I, me"],["你","nǐ","you"],["他","tā","he"],["她","tā","she"],["我们","wǒ men","we, us"],
+      ["是","shì","to be (am / is / are)"],["不","bù","not"],["有","yǒu","to have; there is"],["没有","méi yǒu","don't have; didn't"],
+      ["的","de","'s (possessive): 我的 = my"],["在","zài","at, in; (doing) right now"],["了","le","marks a completed action or a change"],
+      ["吗","ma","turns a sentence into a yes/no question"],["呢","ne","\"and …?\" (你呢？ = and you?)"],
+      ["这","zhè","this"],["那","nà","that"],["什么","shén me","what"],["谁","shéi","who"],["哪里","nǎ lǐ","where"],
+      ["怎么","zěn me","how"],["为什么","wèi shén me","why"],["多少","duō shao","how many, how much"],
+      ["好","hǎo","good"],["很","hěn","very"],["要","yào","to want, to need"],["想","xiǎng","would like to; to think, to miss"],
+      ["去","qù","to go"],["来","lái","to come"],["吃","chī","to eat"],["喝","hē","to drink"],["看","kàn","to look, to watch, to read"],
+      ["说","shuō","to speak, to say"],["做","zuò","to do, to make"],["学习","xué xí","to study"],["喜欢","xǐ huan","to like"],
+      ["知道","zhī dào","to know (a fact)"],["会","huì","can (a learned skill)"],["可以","kě yǐ","may, can (allowed)"],
+      ["人","rén","person"],["朋友","péng you","friend"],["家","jiā","home, family"],["钱","qián","money"],
+      ["今天","jīn tiān","today"],["明天","míng tiān","tomorrow"],["昨天","zuó tiān","yesterday"],["现在","xiàn zài","now"],
+      ["中国","zhōng guó","China"],["中文","zhōng wén","Chinese (language)"]
+    ],
+    work: [
+      ["公司","gōng sī","company"],["经理","jīng lǐ","manager"],["同事","tóng shì","colleague"],["办公室","bàn gōng shì","office"],
+      ["开会","kāi huì","to have a meeting"],["问题","wèn tí","problem; question"],["维修","wéi xiū","repair, maintenance"],
+      ["几点？","jǐ diǎn","What time?"],
+      ["明天上午九点开会。","míng tiān shàng wǔ jiǔ diǎn kāi huì","Meeting tomorrow at 9 a.m."],
+      ["需要帮忙吗？","xū yào bāng máng ma","Do you need help?"],
+      ["我来处理。","wǒ lái chǔ lǐ","I'll handle it."],
+      ["准备好了。","zhǔn bèi hǎo le","It's ready."]
+    ]
+  };
+
+  var TONES = [
+    ["妈","mā","1st: high and flat","mother"],
+    ["麻","má","2nd: rising, like a question \"huh?\"","hemp"],
+    ["马","mǎ","3rd: low dip (often just low)","horse"],
+    ["骂","mà","4th: sharp fall, like a command","to scold"],
+    ["吗","ma","Neutral: short and light","question particle"]
+  ];
+  var RULES = [
+    ["你好","Two 3rd tones in a row: the first becomes 2nd.","你好 is written nǐ hǎo but said ní hǎo."],
+    ["不是","不 bù becomes bú before a 4th tone.","不是 bú shì (not), but 不好 bù hǎo."],
+    ["一个","一 yī changes too: yí before a 4th tone, yì before the others.","一个 yí ge, 一天 yì tiān. Plain yī when counting."],
+    ["谢谢","Neutral tone: particles and many second syllables are light.","谢谢 xiè xie, 朋友 péng you."]
+  ];
+  var INITIALS = [
+    ["b","八","bā","like p in \"spin\" (no puff)"],["p","爬","pá","p with a puff of air"],["m","妈","mā","as in English"],["f","发","fā","as in English"],
+    ["d","大","dà","like t in \"stop\" (no puff)"],["t","他","tā","t with a puff"],["n","拿","ná","as in English"],["l","拉","lā","as in English"],
+    ["g","哥","gē","like k in \"skin\" (no puff)"],["k","可","kě","k with a puff"],["h","喝","hē","raspier than English h"],
+    ["j","鸡","jī","\"j\" with tongue flat, smiling"],["q","七","qī","\"ch\" with tongue flat, smiling"],["x","西","xī","\"sh\" with tongue flat, smiling"],
+    ["zh","知","zhī","\"j\" with tongue curled back"],["ch","吃","chī","\"ch\" with tongue curled back"],["sh","是","shì","\"sh\" with tongue curled back"],["r","日","rì","between r and the s in \"pleasure\""],
+    ["z","字","zì","like ds in \"kids\""],["c","词","cí","like ts in \"cats\""],["s","四","sì","as in English s"]
+  ];
+  var FINALS = [
+    ["a","啊","ā"],["o","哦","ó"],["e","饿","è"],["i","衣","yī"],["u","五","wǔ"],["ü","鱼","yú"],
+    ["ai","爱","ài"],["ei","黑","hēi"],["ao","好","hǎo"],["ou","走","zǒu"],["an","看","kàn"],["en","人","rén"],
+    ["ang","忙","máng"],["eng","冷","lěng"],["ong","中","zhōng"],["er","二","èr"],
+    ["ia","家","jiā"],["ie","谢","xiè"],["iao","小","xiǎo"],["iu","六","liù"],["ian","天","tiān"],["in","心","xīn"],
+    ["iang","想","xiǎng"],["ing","名","míng"],["iong","用","yòng"],
+    ["ua","花","huā"],["uo","我","wǒ"],["uai","快","kuài"],["ui","对","duì"],["uan","晚","wǎn"],["un","春","chūn"],["uang","黄","huáng"],
+    ["üe","学","xué"],["üan","远","yuǎn"],["ün","云","yún"]
+  ];
+
+  // ---------- storage (per-viewer convenience only) ----------
+  var KEY="mfs-v1";
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+  var state=load(); state.known=state.known||{};
+
+  // ---------- helpers ----------
+  var MARKS={1:"āēīōūǖĀĒĪŌŪǕ",2:"áéíóúǘÁÉÍÓÚǗ",3:"ǎěǐǒǔǚǍĚǏǑǓǙ",4:"àèìòùǜÀÈÌÒÙǛ"};
+  function toneOf(s){for(var t=1;t<=4;t++){for(var i=0;i<s.length;i++){if(MARKS[t].indexOf(s[i])>=0)return t}}return 5}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  var HAN=/\p{Script=Han}/u;
+  function ruby(h,p){
+    var toks=p.split(/\s+/).filter(Boolean),i=0,out="",lat="";
+    Array.from(h).forEach(function(ch){
+      if(HAN.test(ch)){
+        if(lat){out+='<span class="lat">'+esc(lat)+'</span>';lat="";}
+        var s=toks[i++]||"",t=toneOf(s);
+        out+='<ruby class="t'+t+'">'+ch+'<rt>'+esc(s)+'</rt></ruby>';
+      } else lat+=ch;
+    });
+    if(lat)out+='<span class="lat">'+esc(lat)+'</span>';
+    return out;
+  }
+  var PLAY='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+
+  // ---------- speech ----------
+  var voice=null, synth=window.speechSynthesis;
+  var vEl=document.getElementById("voice");
+  function pickVoice(){
+    if(!synth){vEl.textContent="Audio isn't supported in this browser.";vEl.className="voice warn";return}
+    var vs=synth.getVoices()||[];
+    voice=vs.find(function(v){return /^zh[-_]CN/i.test(v.lang)})||vs.find(function(v){return /^zh/i.test(v.lang)})||vs.find(function(v){return /chinese|mandarin|普通话|中文/i.test(v.name)})||null;
+    if(voice){vEl.textContent="Voice: "+voice.name;vEl.className="voice"}
+    else if(vs.length){vEl.textContent="No Chinese voice on this device. Add Chinese (Simplified) in your system's speech or language settings.";vEl.className="voice warn"}
+  }
+  if(synth){pickVoice();synth.onvoiceschanged=pickVoice;setTimeout(pickVoice,1200)}else pickVoice();
+  function speak(text){
+    if(!synth)return;
+    try{
+      synth.cancel();
+      var u=new SpeechSynthesisUtterance(text.replace(/Isaac/g,"Isaac"));
+      u.lang=voice?voice.lang:"zh-CN"; if(voice)u.voice=voice;
+      u.rate=state.slow?0.55:0.85;
+      synth.speak(u);
+    }catch(e){}
+  }
+
+  // ---------- render tones / rules / sounds ----------
+  var tt=document.getElementById("toneTiles");
+  TONES.forEach(function(r){
+    var b=document.createElement("button");b.type="button";b.className="tile";
+    b.innerHTML='<span class="lab t'+toneOf(r[1])+'">'+r[0]+'</span><span class="t'+toneOf(r[1])+'" style="font-weight:600">'+esc(r[1])+'</span><span class="hint">'+esc(r[2])+'<br>"'+esc(r[3])+'"</span>';
+    b.setAttribute("aria-label","Play "+r[1]);
+    b.addEventListener("click",function(){speak(r[0])});tt.appendChild(b);
+  });
+  var rl=document.getElementById("rules");
+  RULES.forEach(function(r){
+    var d=document.createElement("div");d.className="rule";
+    d.innerHTML='<button class="play" type="button" aria-label="Play '+esc(r[0])+'">'+PLAY+'</button><p><b>'+esc(r[1])+'</b><br><span class="note">'+esc(r[2])+'</span></p>';
+    d.querySelector("button").addEventListener("click",function(){speak(r[0])});rl.appendChild(d);
+  });
+  function tiles(id,arr,withHint){
+    var box=document.getElementById(id);
+    arr.forEach(function(r){
+      var b=document.createElement("button");b.type="button";b.className="tile";
+      b.innerHTML='<span class="lab">'+esc(r[0])+'</span><span class="ex t'+toneOf(r[2])+'">'+r[1]+'<small>'+esc(r[2])+'</small></span>'+(withHint&&r[3]?'<span class="hint">'+esc(r[3])+'</span>':'');
+      b.setAttribute("aria-label",r[0]+": play "+r[2]);
+      b.addEventListener("click",function(){speak(r[1])});box.appendChild(b);
+    });
+  }
+  tiles("initials",INITIALS,true); tiles("finals",FINALS,false);
+
+  // ---------- render phrase lists ----------
+  Object.keys(DATA).forEach(function(sec){
+    var box=document.querySelector('[data-list="'+sec+'"]');
+    DATA[sec].forEach(function(r,idx){
+      var id=sec+"-"+(idx+1);
+      var row=document.createElement("div");row.className="row";row.dataset.id=id;
+      row.innerHTML='<button class="play" type="button" aria-label="Play '+esc(r[0])+'">'+PLAY+'</button>'+
+        '<div class="body"><div class="han" lang="zh-Hans">'+ruby(r[0],r[1])+'</div>'+
+        '<button class="en" type="button">'+esc(r[2])+'</button>'+(r[3]?'<span class="note">'+esc(r[3])+'</span>':'')+'</div>'+
+        '<label class="know" for="k-'+id+'"><input type="checkbox" id="k-'+id+'"><span>Known</span></label>';
+      row.querySelector(".play").addEventListener("click",function(){speak(r[0])});
+      row.querySelector(".en").addEventListener("click",function(e){e.currentTarget.classList.toggle("shown")});
+      var cb=row.querySelector("input");cb.checked=!!state.known[id];row.classList.toggle("known",cb.checked);
+      cb.addEventListener("change",function(){if(cb.checked)state.known[id]=1;else delete state.known[id];row.classList.toggle("known",cb.checked);save();progress()});
+      box.appendChild(row);
+    });
+  });
+  function progress(){
+    var all=0,k=0;
+    Object.keys(DATA).forEach(function(sec){
+      var n=DATA[sec].length,c=0;
+      for(var i=1;i<=n;i++)if(state.known[sec+"-"+i])c++;
+      all+=n;k+=c;
+      var el=document.querySelector('[data-prog="'+sec+'"]');if(el)el.textContent=c+" / "+n+" known";
+    });
+    document.getElementById("total").textContent=k+" of "+all+" phrases and words known";
+  }
+  progress();
+
+  // ---------- toggles ----------
+  function bindToggle(id,key,cls){
+    var b=document.getElementById(id);
+    function apply(){b.setAttribute("aria-pressed",state[key]?"true":"false");if(cls)document.body.classList.toggle(cls,!!state[key]);}
+    b.addEventListener("click",function(){state[key]=!state[key];
+      if(key==="hideEn")document.querySelectorAll(".en.shown").forEach(function(e){e.classList.remove("shown")});
+      apply();save()});
+    apply();
+  }
+  bindToggle("slow","slow",null); bindToggle("hidePy","hidePy","hide-py"); bindToggle("hideEn","hideEn","hide-en");
+})();
+</script>
+
+</body></html>
