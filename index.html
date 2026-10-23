@@ -1,392 +1,875 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Mandarin First Steps</title>
+<title>Mandarin Basics</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap">
 <style>
-/* Layout: one reading column; sticky control bar; each section is a list of tap-to-hear rows with pinyin set above every character (ruby). */
+/* Layout: reading column on the left, core words pinned on the right (bottom sheet on phones). Each example is a row of word blocks: pinyin over hanzi over meaning. */
 :root{
-  --bg:#f4f6f5; --surface:#ffffff; --fg:#18201d; --muted:#56625e; --line:#dbe2df; --accent:#0d7a60; --accent-ink:#ffffff; --chip:#e7eeeb;
+  --bg:#f4f6f5; --surface:#ffffff; --fg:#18201d; --muted:#56625e; --line:#dbe2df; --accent:#0d7a60; --accent-ink:#ffffff; --chip:#e7eeeb; --flash:#fff3c4;
   --t1:#c0262d; --t2:#1f7a33; --t3:#1557b0; --t4:#7a2aa0; --t5:#6a716e;
   --han:"Noto Serif SC","Songti SC","SimSun",serif;
   --sans:"Noto Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26;
+  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26; --flash:#4a4120;
   --t1:#ff7b73; --t2:#74d68a; --t3:#7ab6ff; --t4:#d79bf7; --t5:#a3aca8; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26;
+  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26; --flash:#4a4120;
   --t1:#ff7b73; --t2:#74d68a; --t3:#7ab6ff; --t4:#d79bf7; --t5:#a3aca8; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.wrap{max-width:860px;margin:0 auto}
-h1,h2{font-family:var(--han);text-wrap:balance;margin:0}
-a{color:var(--accent)}
-button,input,label{font:inherit}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 64px}
+h1,h2,h3{font-family:var(--han);margin:0;text-wrap:balance}
+button,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:12px 10px;display:flex;flex-direction:column;gap:10px}
-.titlerow{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
-h1{font-size:24px;letter-spacing:.01em}
+.shell{max-width:1180px;margin:0 auto}
+header.top{display:flex;flex-direction:column;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+h1{font-size:24px}
 h1 .zh{color:var(--accent);margin-left:6px}
-.total{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.toggle{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px;min-height:34px}
+.toggle{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px;min-height:34px}
 .toggle[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.voice{font-size:12px;color:var(--muted)}
-.voice.warn{color:var(--t1)}
-nav.sections{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
-nav.sections a{flex:none;text-decoration:none;color:var(--fg);background:var(--chip);border-radius:999px;padding:4px 11px;font-size:13px;white-space:nowrap}
+.voice{font-size:12px;color:var(--muted)} .voice.warn{color:var(--t1)}
+nav.sections{display:flex;gap:6px;flex-wrap:wrap}
+nav.sections a{text-decoration:none;color:var(--fg);background:var(--chip);border-radius:999px;padding:4px 11px;font-size:13px}
 nav.sections a:hover{background:var(--line)}
 
-section{padding-top:28px;scroll-margin-top:140px}
-.sechead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:6px}
-h2{font-size:21px}
-.prog{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
-.intro{color:var(--muted);margin:0 0 12px;max-width:66ch}
-
-.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
-.row:first-child{border-top:0}
-.row.known .han{opacity:.55}
-.play{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--chip);color:var(--fg);cursor:pointer;display:grid;place-items:center;flex:none}
-.play:hover{border-color:var(--accent);color:var(--accent)}
-.play svg{width:16px;height:16px}
-.body{min-width:0;display:flex;flex-direction:column;gap:2px}
-.han{font-family:var(--han);font-size:25px;line-height:1.9;overflow-wrap:anywhere}
-.han ruby{ruby-position:over;margin-right:.08em}
-.han rt{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.01em}
-.han .lat{font-family:var(--sans);font-size:20px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 23rem;gap:24px;align-items:start}
+.legend{font-size:13px;color:var(--muted);max-width:68ch;margin:8px 0 0}
+.legend .sw{font-weight:600}
 .t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t5{color:var(--t5)}
-.en{font-size:14px;color:var(--muted);background:none;border:0;padding:0;text-align:left;cursor:default}
-.note{font-size:12.5px;color:var(--muted)}
-.know{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none}
-.know input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
 
-body.hide-py .han rt{visibility:hidden}
-body.hide-en .en{filter:blur(5px);cursor:pointer}
-body.hide-en .en.shown{filter:none}
+section{padding-top:28px;scroll-margin-top:12px}
+h2{font-size:22px}
+.intro{color:var(--muted);margin:4px 0 14px;max-width:66ch}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.block h3{font-size:17px}
+.rule{margin:4px 0 0}
+.note{font-size:13px;color:var(--muted);margin:4px 0 0}
+.exs{display:flex;flex-direction:column;margin-top:8px}
+.ex{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.play{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--chip);cursor:pointer;display:grid;place-items:center;margin-top:18px}
+.play:hover{border-color:var(--accent);color:var(--accent)}
+.play svg{width:14px;height:14px}
+.words{display:flex;flex-wrap:wrap;gap:2px 4px;min-width:0}
+.tok{background:none;border:1px solid transparent;border-radius:8px;padding:2px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;text-align:left;font-family:var(--han)}
+.tok:hover{border-color:var(--accent);background:var(--chip)}
+.tok.punct{cursor:default;border:0;padding-inline:0;justify-content:flex-end;font-size:24px;color:var(--muted);align-self:flex-end;padding-bottom:20px}
+.tok .han{font-size:26px;line-height:1.75;white-space:nowrap}
+.tok ruby,.cw ruby{ruby-position:over;margin-right:.08em}
+.tok rt{font-family:var(--sans);font-size:12px;font-weight:500}
+.tok rt.sandhi{text-decoration:underline dotted;text-underline-offset:3px}
+.tok .g{font-family:var(--sans);font-size:12px;color:var(--muted);max-width:11em;line-height:1.3}
+.en{grid-column:2;color:var(--fg);font-size:14.5px}
+body.hide-py .tok rt{visibility:hidden}
+body.hide-gloss .tok .g, body.hide-gloss .en{filter:blur(5px)}
+body.hide-gloss .tok .g.shown, body.hide-gloss .en.shown{filter:none}
 
-/* tiles */
+
+/* tiles: tones, sounds, characters */
+section h3.sub{font-family:var(--han);font-size:16px;margin:20px 0 6px}
+section h3.sub .c{font-family:var(--sans);font-size:12.5px;color:var(--muted);font-weight:400;margin-left:8px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;color:var(--fg)}
 .tile:hover{border-color:var(--accent)}
 .tile .lab{font-weight:700;font-size:18px}
-.tile .ex{font-family:var(--han);font-size:20px}
-.tile .ex small{font-family:var(--sans);font-size:12px;margin-left:4px}
+.tile .tex{font-family:var(--han);font-size:20px}
+.tile .tex small{font-family:var(--sans);font-size:12px;margin-left:4px}
 .tile .hint{font-size:12px;color:var(--muted);line-height:1.35}
 .tones .tile .lab{font-family:var(--han);font-size:30px}
-h3{font-size:15px;margin:18px 0 8px}
+.trules{display:flex;flex-direction:column;gap:8px}
+.trule{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center}
+.trule p{margin:0}
+.trule .play{margin-top:0}
+.mix{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin-bottom:8px}
+.mix .mlab{width:100%;font-size:12.5px;color:var(--muted)}
+.mix .tile{min-width:92px}
+.ctiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.ctile{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px 9px;display:flex;flex-direction:column;gap:1px;text-align:left;cursor:pointer;color:var(--fg)}
+.ctile:hover{border-color:var(--accent)}
+.ctile .rk{position:absolute;top:6px;right:9px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ctile .cc{font-family:var(--han);font-size:36px;line-height:1.15}
+.ctile .cp{font-weight:600;font-size:14px}
+.ctile .cm{font-size:12.5px;color:var(--muted);line-height:1.3}
+.ctile .cx{font-family:var(--han);font-size:14.5px;margin-top:3px;border-top:1px dashed var(--line);padding-top:3px}
+.ctile .cx small{font-family:var(--sans);font-size:11.5px;color:var(--muted);margin-left:4px}
+body.hide-py .cp, body.hide-py .cx small{visibility:hidden}
+body.hide-gloss .cm{filter:blur(5px)}
+body.hide-gloss .cm.shown{filter:none}
 
-.rules{display:flex;flex-direction:column;gap:8px}
-.rule{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center}
-.rule p{margin:0}
-.rule b{font-weight:600}
+/* core words panel */
+aside#core{position:sticky;top:max(12px,env(safe-area-inset-top,0px));max-height:calc(100vh - 24px);background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;margin-top:28px;min-height:0}
+.corehead{padding:12px 12px 8px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.corehead .row1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.corehead h2{font-size:17px}
+.corehead .count{font-size:12px;color:var(--muted)}
+#close{display:none;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:3px 12px;cursor:pointer;font-size:13px}
+#filter{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.corelist{overflow:auto;position:relative;padding:4px 8px 12px;min-height:0;flex:1}
+.grp h3{font-family:var(--sans);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 4px 4px}
+.cw{display:grid;grid-template-columns:8.6rem minmax(0,1fr);gap:8px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:2px 6px;cursor:pointer}
+.cw:hover{background:var(--chip)}
+.cw.flash{background:var(--flash)}
+.cw .han{font-family:var(--han);font-size:21px;line-height:1.75;white-space:nowrap}
+.cw rt{font-family:var(--sans);font-size:11px;font-weight:500}
+.cw .m{font-size:13px;color:var(--muted);line-height:1.3}
+.empty{padding:16px 6px;color:var(--muted);font-size:13px}
+#openCore{display:none}
 
-.phases{display:flex;flex-direction:column;gap:10px;counter-reset:ph}
-.phase{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-.phase h4{margin:0 0 4px;font-size:15px}
-.phase .when{font-size:12.5px;color:var(--accent);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
-.phase ul{margin:6px 0 0;padding-left:18px}
-.phase li{margin:2px 0}
-.fine{font-size:12.5px;color:var(--muted);margin-top:10px}
-
-@media (max-width:480px){
-  .han{font-size:22px}
-  .know span{display:none}
-  section{scroll-margin-top:170px}
+@media (max-width:960px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  #openCore{display:inline-flex;position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:15;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:10px 16px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.25);cursor:pointer}
+  aside#core{position:fixed;left:0;right:0;bottom:0;top:auto;height:72vh;max-height:none;margin:0;z-index:20;border-radius:14px 14px 0 0;transform:translateY(105%);visibility:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
+  body.core-open aside#core{transform:none;visibility:visible}
+  #close{display:inline-block}
 }
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-html{scroll-behavior:smooth}
+@media (max-width:480px){
+  .tok .han{font-size:23px}
+  .block{padding:12px}
+}
+@media (prefers-reduced-motion:no-preference){
+  aside#core{transition:transform .2s ease,visibility .2s}
+}
 </style>
 
-<div class="wrap">
+<div class="shell">
   <header class="top">
-    <div class="titlerow">
-      <h1>Mandarin First Steps <span class="zh">中文第一步</span></h1>
-      <span class="total" id="total"></span>
-    </div>
+    <h1>Mandarin Basics <span class="zh">中文基础</span></h1>
     <div class="controls">
       <button class="toggle" id="slow" aria-pressed="false" type="button">Slow audio</button>
       <button class="toggle" id="hidePy" aria-pressed="false" type="button">Hide pinyin</button>
-      <button class="toggle" id="hideEn" aria-pressed="false" type="button">Hide meaning</button>
+      <button class="toggle" id="hideGloss" aria-pressed="false" type="button">Hide meaning</button>
+      <button class="toggle" id="spoken" aria-pressed="false" type="button">Show tones as spoken</button>
       <span class="voice" id="voice">Checking for a Chinese voice…</span>
     </div>
-    <nav class="sections" aria-label="Sections">
-      <a href="#tones">Tones</a><a href="#sounds">Sounds</a><a href="#greetings">Greetings</a><a href="#intro">Introduce yourself</a><a href="#survival">Survival</a><a href="#numbers">Numbers</a><a href="#core">Core words</a><a href="#work">At work</a><a href="#roadmap">Roadmap</a>
-    </nav>
+    <nav class="sections" id="nav" aria-label="Sections"></nav>
+    <p class="legend">Start at the top and work down. Tap any tile, word or the ▶ to hear it. The core words stay on the right so you can look a word up while you read. In example sentences each word shows pinyin, character, then its meaning. Colors: <span class="sw t1">1st</span> <span class="sw t2">2nd</span> <span class="sw t3">3rd</span> <span class="sw t4">4th</span> <span class="sw t5">neutral</span>. Pinyin is written the standard way, so 不 and 一 already show their changed tone. A <span style="text-decoration:underline dotted;text-underline-offset:3px">dotted underline</span> marks a 3rd tone usually said as 2nd before another 3rd (a rough guide).</p>
   </header>
 
-  <section id="tones">
-    <div class="sechead"><h2>The four tones + neutral</h2></div>
-    <p class="intro">The same syllable means different things depending on pitch. Colors on this page follow the tone: <span class="t1">1st</span>, <span class="t2">2nd</span>, <span class="t3">3rd</span>, <span class="t4">4th</span>, <span class="t5">neutral</span>. Tap each one and copy the pitch out loud.</p>
-    <div class="tiles tones" id="toneTiles"></div>
-    <h3>Tone changes in real speech</h3>
-    <div class="rules" id="rules"></div>
-  </section>
-
-  <section id="sounds">
-    <div class="sechead"><h2>Sounds: initials and finals</h2></div>
-    <p class="intro">A syllable is an initial (start sound) plus a final (end sound), plus a tone. Tap a tile to hear an example word. Spend the most time on the tricky ones: q, x, j, zh, ch, sh, r, z, c and ü.</p>
-    <h3>Initials</h3>
-    <div class="tiles" id="initials"></div>
-    <h3>Finals</h3>
-    <div class="tiles" id="finals"></div>
-  </section>
-
-  <section id="greetings"><div class="sechead"><h2>Greetings</h2><span class="prog" data-prog="greetings"></span></div><div class="list" data-list="greetings"></div></section>
-  <section id="intro"><div class="sechead"><h2>Introduce yourself</h2><span class="prog" data-prog="intro"></span></div><p class="intro">Name, where you're from, age and job: the usual first conversation.</p><div class="list" data-list="intro"></div></section>
-  <section id="survival"><div class="sechead"><h2>Survival phrases</h2><span class="prog" data-prog="survival"></span></div><p class="intro">For when you're stuck in a conversation, which will be often at first. That's normal.</p><div class="list" data-list="survival"></div></section>
-  <section id="numbers"><div class="sechead"><h2>Numbers</h2><span class="prog" data-prog="numbers"></span></div><p class="intro">Numbers 11–99 are built from these: 十一 is "ten-one", 三十 is "three-ten".</p><div class="list" data-list="numbers"></div></section>
-  <section id="core"><div class="sechead"><h2>Core words</h2><span class="prog" data-prog="core"></span></div><p class="intro">Some of the most frequent words in everyday Mandarin. Most sentences you meet early on are built from these.</p><div class="list" data-list="core"></div></section>
-  <section id="work"><div class="sechead"><h2>At work</h2><span class="prog" data-prog="work"></span></div><p class="intro">A head start for GA and operations conversations.</p><div class="list" data-list="work"></div></section>
-
-  <section id="roadmap">
-    <div class="sechead"><h2>Roadmap to HSK 4</h2></div>
-    <p class="intro">A rough guide. Timing depends on daily hours. The 2026 HSK standard puts HSK 4 at about 2,000 words, more than the old version.</p>
-    <div class="phases">
-      <div class="phase"><div class="when">Weeks 1–3</div><h4>Pinyin and tones</h4><ul><li>Tones and Sounds sections above, until you can say each tile without looking.</li><li>Shadowing: play a phrase, pause, repeat it with the same melody.</li></ul></div>
-      <div class="phase"><div class="when">Months 1–3</div><h4>Survival Mandarin (HSK 1 level)</h4><ul><li>Greetings, introduction, survival phrases and core words on this page.</li><li>Basic patterns: 是 sentences, 吗 questions, 不 / 没 negation, the measure word 个, time before the verb (我明天去).</li><li>Start an HSK 1 deck in Anki: about 15 minutes a day.</li></ul></div>
-      <div class="phase"><div class="when">Months 3–9</div><h4>HSK 2–3: real input</h4><ul><li>A textbook series mapped to HSK (ask your friend which edition learners use now).</li><li>Graded readers, and video with Chinese + English subtitles together (the Language Reactor extension does this on YouTube and Netflix). Peppa Pig in Mandarin, 小猪佩奇, is a classic beginner show.</li><li>Speak every week: your friend and your Discord servers. Awkward is fine.</li></ul></div>
-      <div class="phase"><div class="when">Months 9–24</div><h4>HSK 4 and workplace Mandarin</h4><ul><li>HSK 4 vocabulary, mock tests, then the exam.</li><li>Work vocabulary for GA and operations: meetings, schedules, repairs, vendors.</li><li>Add "Mandarin (HSK level)" to your CV and LinkedIn as soon as you pass any level.</li></ul></div>
-    </div>
-    <h3>Daily routine (40 minutes)</h3>
-    <div class="rules">
-      <div class="rule"><span class="prog">15 min</span><p><b>Anki flashcards.</b> New words plus reviews. Don't skip a day; reviews pile up.</p></div>
-      <div class="rule"><span class="prog">15 min</span><p><b>Listening.</b> This page, a lesson, or a show with dual subtitles.</p></div>
-      <div class="rule"><span class="prog">10 min</span><p><b>Speaking.</b> Shadow phrases aloud, or message your friend in Mandarin.</p></div>
-    </div>
-    <h3>Tools</h3>
-    <div class="rules">
-      <div class="rule"><span class="prog">Dictionary</span><p><a href="https://www.pleco.com/" target="_blank" rel="noopener">Pleco</a>: the standard Chinese dictionary app, free.</p></div>
-      <div class="rule"><span class="prog">Flashcards</span><p><a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">Anki</a>: spaced repetition. Search its shared decks for "HSK".</p></div>
-      <div class="rule"><span class="prog">Video</span><p><a href="https://www.languagereactor.com/" target="_blank" rel="noopener">Language Reactor</a>: two subtitle lines at once, with pinyin.</p></div>
-    </div>
-    <p class="fine">Audio uses your device's built-in Chinese voice. It's good for practice, but a real speaker (your friend) is the final reference for tones.</p>
-  </section>
+  <div class="layout">
+    <main id="main"></main>
+    <aside id="core" aria-label="Core words">
+      <div class="corehead">
+        <div class="row1"><h2>Core words</h2><span class="count" id="count"></span><button id="close" type="button">Close</button></div>
+        <input id="filter" type="search" placeholder="Search: nǐ, you, 谁…" aria-label="Search core words" autocomplete="off">
+      </div>
+      <div class="corelist" id="corelist"></div>
+    </aside>
+  </div>
+  <button id="openCore" type="button">Core words</button>
 </div>
 
 <script>
+/* Token format: "汉字/pin yin/gloss|汉字/pin yin/gloss|，" ; a piece without "/" is punctuation. */
+function E(tokens, en){
+  var t = tokens.split("|").map(function(p){
+    var a = p.split("/");
+    return a.length >= 3 ? {h:a[0], p:a[1], g:a.slice(2).join("/")} : {h:p, p:"", g:""};
+  });
+  return {t:t, en:en};
+}
+
+/* ---------- today's date, built live so the example is always right ---------- */
+var DG=["líng","yī","èr","sān","sì","wǔ","liù","qī","bā","jiǔ"], DH="零一二三四五六七八九";
+function numTok(n){
+  if(n<=9) return DH[n]+"/"+DG[n]+"/"+n;
+  if(n===10) return "十/shí/10";
+  var t=Math.floor(n/10), o=n%10, h="", p="";
+  if(t>1){h+=DH[t];p+=DG[t]+" "}
+  h+="十";p+="shí";
+  if(o){h+=DH[o];p+=" "+DG[o]}
+  return h+"/"+p+"/"+n;
+}
+function todayEx(){
+  var d=new Date(), wd=d.getDay();
+  var MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var WN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var wtok = wd===0 ? "天/tiān/day" : numTok(wd);
+  return E("今天/jīn tiān/today|是/shì/is|"+numTok(d.getMonth()+1)+"|月/yuè/month|"+numTok(d.getDate())+"|号/hào/date|，|星期/xīng qī/week|"+wtok,
+           "Today is "+MN[d.getMonth()]+" "+d.getDate()+", "+WN[wd]+".");
+}
+
+/* ---------- characters, ranked by how much everyday use they get ----------
+   [char, pinyin, meaning, example word, example pinyin] ---------- */
+var CHAR_TIERS = [
+ {title:"First 30", note:"These show up in almost every sentence. Learn these before anything else.", items:[
+  ["我","wǒ","I, me","我们","wǒ men"],["你","nǐ","you","你好","nǐ hǎo"],["他","tā","he","他们","tā men"],["她","tā","she","她们","tā men"],
+  ["们","men","plural for people","你们","nǐ men"],["的","de","'s, of","我的","wǒ de"],["是","shì","to be","是的","shì de"],["不","bù","not","不好","bù hǎo"],
+  ["有","yǒu","to have","有人","yǒu rén"],["没","méi","not (didn't)","没有","méi yǒu"],["了","le","done, or changed","好了","hǎo le"],["在","zài","at; doing now","在家","zài jiā"],
+  ["吗","ma","yes/no question","好吗","hǎo ma"],["很","hěn","very","很好","hěn hǎo"],["也","yě","also","也是","yě shì"],["这","zhè","this","这个","zhè ge"],
+  ["那","nà","that","那个","nà ge"],["个","gè","general measure word","一个","yí gè"],["人","rén","person","中国人","zhōng guó rén"],["好","hǎo","good","你好","nǐ hǎo"],
+  ["去","qù","to go","去中国","qù zhōng guó"],["来","lái","to come","来了","lái le"],["吃","chī","to eat","吃饭","chī fàn"],["喝","hē","to drink","喝水","hē shuǐ"],
+  ["看","kàn","to look, watch, read","看书","kàn shū"],["说","shuō","to speak","说中文","shuō zhōng wén"],["想","xiǎng","to want to; to think","想去","xiǎng qù"],
+  ["要","yào","to want, need","要水","yào shuǐ"],["会","huì","can (a skill)","会说","huì shuō"],["都","dōu","all, both","都是","dōu shì"]
+ ]},
+ {title:"Next 40", note:"Question words, size and feelings, numbers and time.", items:[
+  ["呢","ne","and …?","你呢","nǐ ne"],["和","hé","and","你和我","nǐ hé wǒ"],["什","shén","what (in 什么)","什么","shén me"],["么","me","(in 什么, 怎么)","什么","shén me"],
+  ["谁","shéi","who","你是谁","nǐ shì shéi"],["哪","nǎ","which","哪里","nǎ lǐ"],["几","jǐ","how many","几点","jǐ diǎn"],["怎","zěn","how (in 怎么)","怎么","zěn me"],
+  ["为","wèi","for; why (为什么)","为什么","wèi shén me"],["多","duō","many","很多","hěn duō"],["少","shǎo","few","很少","hěn shǎo"],["大","dà","big","大家","dà jiā"],
+  ["小","xiǎo","small","很小","hěn xiǎo"],["太","tài","too","太好了","tài hǎo le"],["对","duì","correct","对不起","duì bu qǐ"],["热","rè","hot","很热","hěn rè"],
+  ["冷","lěng","cold","很冷","hěn lěng"],["忙","máng","busy","很忙","hěn máng"],["累","lèi","tired","很累","hěn lèi"],["饿","è","hungry","我饿了","wǒ è le"],
+  ["贵","guì","expensive","太贵了","tài guì le"],
+  ["一","yī","1","一点","yì diǎn"],["二","èr","2","二十","èr shí"],["三","sān","3","三十","sān shí"],["四","sì","4","四个","sì gè"],["五","wǔ","5","五点","wǔ diǎn"],
+  ["六","liù","6","六点","liù diǎn"],["七","qī","7","七点","qī diǎn"],["八","bā","8","八点","bā diǎn"],["九","jiǔ","9","九点","jiǔ diǎn"],["十","shí","10","十点","shí diǎn"],
+  ["两","liǎng","2, before a measure word","两个","liǎng gè"],["今","jīn","this (today, this year)","今天","jīn tiān"],["明","míng","next; bright","明天","míng tiān"],
+  ["天","tiān","day; sky","每天","měi tiān"],["年","nián","year","今年","jīn nián"],["月","yuè","month; moon","一月","yī yuè"],["点","diǎn","o'clock; a dot","三点","sān diǎn"],
+  ["号","hào","day of the month","五号","wǔ hào"],["分","fēn","minute","五分","wǔ fēn"]
+ ]},
+ {title:"After that", note:"More time words, things you handle every day, and common verbs.", items:[
+  ["请","qǐng","please","请问","qǐng wèn"],["谢","xiè","to thank","谢谢","xiè xie"],["问","wèn","to ask","请问","qǐng wèn"],["见","jiàn","to see, meet","再见","zài jiàn"],
+  ["可","kě","can; may","可以","kě yǐ"],["以","yǐ","(in 可以)","可以","kě yǐ"],["知","zhī","to know","知道","zhī dào"],["道","dào","way; (in 知道)","知道","zhī dào"],
+  ["喜","xǐ","to like","喜欢","xǐ huan"],["欢","huān","(in 喜欢)","喜欢","xǐ huan"],["早","zǎo","early","早上","zǎo shang"],["晚","wǎn","late; evening","晚上","wǎn shang"],
+  ["星","xīng","star","星期","xīng qī"],["期","qī","period (in 星期)","星期","xīng qī"],
+  ["昨","zuó","yesterday (昨天)","昨天","zuó tiān"],["午","wǔ","noon","中午","zhōng wǔ"],["上","shàng","up; previous; morning","上午","shàng wǔ"],["下","xià","down; next; afternoon","下午","xià wǔ"],
+  ["现","xiàn","present","现在","xiàn zài"],["每","měi","every","每天","měi tiān"],["百","bǎi","hundred","一百","yì bǎi"],["块","kuài","yuan (spoken)","五块","wǔ kuài"],
+  ["家","jiā","home, family","回家","huí jiā"],["国","guó","country","中国","zhōng guó"],["中","zhōng","middle; China","中文","zhōng wén"],["文","wén","writing, language","中文","zhōng wén"],
+  ["钱","qián","money","多少钱","duō shao qián"],["水","shuǐ","water","喝水","hē shuǐ"],["茶","chá","tea","喝茶","hē chá"],["饭","fàn","meal, cooked rice","吃饭","chī fàn"],
+  ["书","shū","book","看书","kàn shū"],["朋","péng","(friend)","朋友","péng you"],["友","yǒu","(friend)","朋友","péng you"],["老","lǎo","old","老师","lǎo shī"],
+  ["师","shī","master, teacher","老师","lǎo shī"],["里","lǐ","inside","这里","zhè lǐ"],["回","huí","to return","回家","huí jiā"],["听","tīng","to listen","听说","tīng shuō"],
+  ["做","zuò","to do, make","做饭","zuò fàn"],["买","mǎi","to buy","买水","mǎi shuǐ"],["住","zhù","to live (reside)","住在","zhù zài"],["叫","jiào","to be called","叫什么","jiào shén me"],
+  ["给","gěi","to give","给我","gěi wǒ"],["学","xué","to learn","学中文","xué zhōng wén"],["爱","ài","to love","我爱你","wǒ ài nǐ"],["等","děng","to wait","等一下","děng yí xià"],
+  ["帮","bāng","to help","帮我","bāng wǒ"],["能","néng","can (able to)","能来","néng lái"]
+ ]}
+];
+/* characters that a speech voice might read wrongly alone: play the example word instead */
+var SAY_WORD = "了的个们吗呢和会为么什给点分号朋师块";
+
+/* ---------- core words panel (always visible on the right) ---------- */
+var CORE = [
+  ["People", [
+    ["我","wǒ","I, me"],["你","nǐ","you"],["您","nín","you (polite)"],["他","tā","he, him"],["她","tā","she, her"],
+    ["我们","wǒ men","we, us"],["你们","nǐ men","you (plural)"],["他们","tā men","they, them"],
+    ["人","rén","person"],["朋友","péng you","friend"],["老师","lǎo shī","teacher"],["爸爸","bà ba","dad"],["妈妈","mā ma","mom"]
+  ]],
+  ["Grammar words", [
+    ["的","de","'s, of (links owner or description to a noun)"],["是","shì","to be (am, is, are)"],
+    ["不","bù","not (changes to bú before a 4th tone)"],["没","méi","not (didn't, haven't)"],
+    ["有","yǒu","to have; there is"],["没有","méi yǒu","don't have; there isn't"],
+    ["吗","ma","turns a statement into a yes/no question"],["呢","ne","and … ? (你呢？ = and you?)"],["吧","ba","softener: let's…, OK?"],
+    ["了","le","action finished, or situation changed"],["在","zài","at, in; doing right now"],["过","guò","have ever (experience)"],
+    ["很","hěn","very (also links a subject to a describing word)"],["也","yě","also, too"],["都","dōu","all, both"],
+    ["和","hé","and (between nouns)"],["太","tài","too (太贵了 = too expensive)"],["个","gè","general measure word"],
+    ["请","qǐng","please"],["给","gěi","to give; to, for"],["有点","yǒu diǎn","a bit (有点累 = a bit tired)"],["一点","yì diǎn","a little"],
+    ["还","hái","still; yet"],["先","xiān","first"],["然后","rán hòu","then, after that"],["但是","dàn shì","but"],["因为","yīn wèi","because"],["所以","suǒ yǐ","so, therefore"]
+  ]],
+  ["Want, can, may", [
+    ["想","xiǎng","to want to, would like to"],["要","yào","to want; need to; about to"],["会","huì","can (a learned skill)"],
+    ["能","néng","can (able to)"],["可以","kě yǐ","may; can (allowed)"],["喜欢","xǐ huan","to like"],["爱","ài","to love"]
+  ]],
+  ["Question words", [
+    ["什么","shén me","what"],["谁","shéi","who"],["哪","nǎ","which"],["哪里","nǎ lǐ","where"],["怎么","zěn me","how"],
+    ["为什么","wèi shén me","why"],["几","jǐ","how many (small numbers)"],["多少","duō shao","how many, how much"]
+  ]],
+  ["Pointing and places", [
+    ["这","zhè","this"],["那","nà","that"],["这里","zhè lǐ","here"],["那里","nà lǐ","there"],["哪里","nǎ lǐ","where"],
+    ["家","jiā","home, family"],["中国","zhōng guó","China"],["中文","zhōng wén","Chinese (language)"]
+  ]],
+  ["Time", [
+    ["现在","xiàn zài","now"],["今天","jīn tiān","today"],["明天","míng tiān","tomorrow"],["昨天","zuó tiān","yesterday"],
+    ["每天","měi tiān","every day"],["早上","zǎo shang","early morning"],["上午","shàng wǔ","morning (before noon)"],
+    ["中午","zhōng wǔ","noon"],["下午","xià wǔ","afternoon"],["晚上","wǎn shang","evening, night"],
+    ["点","diǎn","o'clock"],["分","fēn","minute"],["半","bàn","half"],["刻","kè","quarter of an hour"],
+    ["星期","xīng qī","week"],["月","yuè","month"],["号","hào","day of the month"],["年","nián","year"]
+  ]],
+  ["Verbs", [
+    ["去","qù","to go"],["来","lái","to come"],["回","huí","to return"],["吃","chī","to eat"],["喝","hē","to drink"],["看","kàn","to look, watch, read"],
+    ["说","shuō","to speak, say"],["听","tīng","to listen"],["做","zuò","to do, make"],["学","xué","to learn"],
+    ["知道","zhī dào","to know"],["住","zhù","to live (reside)"],["工作","gōng zuò","to work; work"],
+    ["叫","jiào","to be called"],["买","mǎi","to buy"],["帮","bāng","to help"],["等","děng","to wait"],["见","jiàn","to see, meet"],
+    ["睡觉","shuì jiào","to sleep"],["起床","qǐ chuáng","to get up"]
+  ]],
+  ["Describing words", [
+    ["好","hǎo","good"],["大","dà","big"],["小","xiǎo","small"],["多","duō","many, much"],["少","shǎo","few, little"],
+    ["忙","máng","busy"],["累","lèi","tired"],["饿","è","hungry"],["高兴","gāo xìng","happy"],["贵","guì","expensive"],["便宜","pián yi","cheap"],["热","rè","hot"],["冷","lěng","cold"],["好吃","hǎo chī","tasty"]
+  ]],
+  ["Things", [
+    ["水","shuǐ","water"],["茶","chá","tea"],["咖啡","kā fēi","coffee"],["饭","fàn","meal, cooked rice"],["书","shū","book"],["钱","qián","money"],["天气","tiān qì","weather"],["雨","yǔ","rain"]
+  ]],
+  ["Numbers", [
+    ["一","yī","1"],["二","èr","2"],["两","liǎng","2 (before a measure word)"],["三","sān","3"],["四","sì","4"],["五","wǔ","5"],
+    ["六","liù","6"],["七","qī","7"],["八","bā","8"],["九","jiǔ","9"],["十","shí","10"],
+    ["百","bǎi","hundred"],["千","qiān","thousand"],["万","wàn","ten thousand"],["块","kuài","yuan (spoken)"]
+  ]]
+];
+
+/* ---------- tones and sounds (tiles) ---------- */
+var TONES = [
+  ["妈","mā","1st: high and flat","mother"],
+  ["麻","má","2nd: rising, like a question \"huh?\"","hemp"],
+  ["马","mǎ","3rd: low dip (often just low)","horse"],
+  ["骂","mà","4th: sharp fall, like a command","to scold"],
+  ["吗","ma","Neutral: short and light","question particle"]
+];
+var TONE_RULES = [
+  ["你好","Two 3rd tones in a row: the first becomes 2nd.","你好 is written nǐ hǎo but said ní hǎo."],
+  ["不是","不 bù becomes bú before a 4th tone.","不是 bú shì, but 不好 bù hǎo."],
+  ["一个","一 yī changes too: yí before a 4th tone, yì before the others.","一个 yí gè, 一天 yì tiān. Plain yī when counting."],
+  ["谢谢","Neutral tone: particles and many second syllables are light.","谢谢 xiè xie, 朋友 péng you."]
+];
+var INITIALS = [
+  ["b","八","bā","like p in \"spin\" (no puff)"],["p","爬","pá","p with a puff of air"],["m","妈","mā","as in English"],["f","发","fā","as in English"],
+  ["d","大","dà","like t in \"stop\" (no puff)"],["t","他","tā","t with a puff"],["n","拿","ná","as in English"],["l","拉","lā","as in English"],
+  ["g","哥","gē","like k in \"skin\" (no puff)"],["k","可","kě","k with a puff"],["h","喝","hē","raspier than English h"],
+  ["j","鸡","jī","\"j\" with tongue flat, smiling"],["q","七","qī","\"ch\" with tongue flat, smiling"],["x","西","xī","\"sh\" with tongue flat, smiling"],
+  ["zh","知","zhī","\"j\" with tongue curled back"],["ch","吃","chī","\"ch\" with tongue curled back"],["sh","是","shì","\"sh\" with tongue curled back"],["r","日","rì","between r and the s in \"pleasure\""],
+  ["z","字","zì","like ds in \"kids\""],["c","词","cí","like ts in \"cats\""],["s","四","sì","as in English s"]
+];
+var FINALS = [
+  ["a","啊","ā"],["o","哦","ó"],["e","饿","è"],["i","衣","yī"],["u","五","wǔ"],["ü","鱼","yú"],
+  ["ai","爱","ài"],["ei","黑","hēi"],["ao","好","hǎo"],["ou","走","zǒu"],["an","看","kàn"],["en","人","rén"],
+  ["ang","忙","máng"],["eng","冷","lěng"],["ong","中","zhōng"],["er","二","èr"],
+  ["ia","家","jiā"],["ie","谢","xiè"],["iao","小","xiǎo"],["iu","六","liù"],["ian","天","tiān"],["in","心","xīn"],
+  ["iang","想","xiǎng"],["ing","名","míng"],["iong","用","yòng"],
+  ["ua","花","huā"],["uo","我","wǒ"],["uai","快","kuài"],["ui","对","duì"],["uan","晚","wǎn"],["un","春","chūn"],["uang","黄","huáng"],
+  ["üe","学","xué"],["üan","远","yuǎn"],["ün","云","yún"]
+];
+/* trios that sound alike to a new ear; the "i" is a different sound in each row */
+var MIXUPS = [
+  ["s / sh / x",[["四","sì"],["十","shí"],["西","xī"]]],
+  ["z / zh / j",[["字","zì"],["知","zhī"],["鸡","jī"]]],
+  ["c / ch / q",[["词","cí"],["吃","chī"],["七","qī"]]]
+];
+
+var SECTIONS = [
+  {id:"greetings", title:"Greetings and manners", intro:"What you say in the first ten seconds of any conversation.",
+   blocks:[
+    {title:"Hello and goodbye", rule:"你好 works at any time of day. 您 is the polite you, for elders and strangers.", note:"Two 3rd tones in a row: 你好 is written nǐ hǎo but said ní hǎo.",
+     ex:[
+      E("你/nǐ/you|好/hǎo/good","Hello."),
+      E("您/nín/you (polite)|好/hǎo/good","Hello (polite)."),
+      E("早上/zǎo shang/morning|好/hǎo/good","Good morning."),
+      E("晚上/wǎn shang/evening|好/hǎo/good","Good evening."),
+      E("再见/zài jiàn/goodbye","Goodbye."),
+      E("明天/míng tiān/tomorrow|见/jiàn/see","See you tomorrow."),
+      E("好久/hǎo jiǔ/a long time|不/bú/not|见/jiàn/see","Long time no see.")
+    ]},
+    {title:"How are you", rule:"Answer with 很 plus a describing word, then bounce it back with 呢.",
+     ex:[
+      E("你/nǐ/you|好/hǎo/well|吗/ma/(question)|？","How are you?"),
+      E("我/wǒ/I|很/hěn/very|好/hǎo/well|，|你/nǐ/you|呢/ne/and?|？","I'm good, and you?"),
+      E("我/wǒ/I|也/yě/also|很/hěn/very|好/hǎo/well","I'm good too.")
+    ]},
+    {title:"Thanks and sorry", rule:"Short, and you will use them every day.",
+     ex:[
+      E("谢谢/xiè xie/thank you","Thank you."),
+      E("不/bú/not|客气/kè qi/polite","You're welcome."),
+      E("对不起/duì bu qǐ/sorry","Sorry."),
+      E("没/méi/not|关系/guān xi/matter","It's okay."),
+      E("不好意思/bù hǎo yì si/excuse me, sorry","Excuse me. / Sorry to bother you."),
+      E("请问/qǐng wèn/may I ask","Excuse me, may I ask…")
+    ]}
+  ]},
+
+  {id:"about", title:"About you", intro:"The usual first conversation: name, country, age, what you do.",
+   blocks:[
+    {title:"Name and country", rule:"Answers fill the same slot as the question: 你叫什么名字？ → 我叫 …",
+     ex:[
+      E("你/nǐ/you|叫/jiào/are called|什么/shén me/what|名字/míng zi/name|？","What's your name?"),
+      E("我/wǒ/I|叫/jiào/am called|Isaac//(your name)|。","My name is Isaac."),
+      E("认识/rèn shi/to know (someone)|你/nǐ/you|很/hěn/very|高兴/gāo xìng/happy","Nice to meet you."),
+      E("你/nǐ/you|是/shì/are|哪/nǎ/which|国/guó/country|人/rén/person|？","Which country are you from?"),
+      E("我/wǒ/I|是/shì/am|印尼人/yìn ní rén/Indonesian","I'm Indonesian."),
+      E("我/wǒ/I|住/zhù/live|在/zài/at|雅加达/yǎ jiā dá/Jakarta","I live in Jakarta.")
+    ]},
+    {title:"Age and what you do", rule:"Age is just number + 岁. 今年 (this year) goes before the verb.",
+     ex:[
+      E("你/nǐ/you|今年/jīn nián/this year|多大/duō dà/how old|？","How old are you?"),
+      E("我/wǒ/I|今年/jīn nián/this year|三十/sān shí/thirty|岁/suì/years old","I'm thirty this year."),
+      E("你/nǐ/you|做/zuò/do|什么/shén me/what|工作/gōng zuò/work|？","What do you do for work?"),
+      E("我/wǒ/I|是/shì/am|老师/lǎo shī/teacher","I'm a teacher.")
+    ]},
+    {title:"Your Chinese", rule:"You will say these a lot at first.",
+     ex:[
+      E("我/wǒ/I|在/zài/(doing now)|学/xué/learn|中文/zhōng wén/Chinese","I'm learning Chinese."),
+      E("我/wǒ/I|会/huì/can|说/shuō/speak|一点/yì diǎn/a little|中文/zhōng wén/Chinese","I can speak a little Chinese."),
+      E("我的/wǒ de/my|中文/zhōng wén/Chinese|不/bú/not|太/tài/too|好/hǎo/good","My Chinese isn't very good (yet).")
+    ]}
+  ]},
+
+  {id:"skeleton", title:"Sentence skeleton", intro:"Chinese has no verb endings, so word order does the work. These patterns build most early sentences.",
+   blocks:[
+    {title:"A 是 B", rule:"Use 是 between two nouns. It means am, is or are.", note:"It is not used before a describing word: say 我很忙, not 我是忙.",
+     ex:[
+      E("我/wǒ/I|是/shì/am|印尼人/yìn ní rén/Indonesian","I am Indonesian."),
+      E("他/tā/he|是/shì/is|我/wǒ/I|的/de/'s|朋友/péng you/friend","He is my friend."),
+      E("她/tā/she|是/shì/is|我的/wǒ de/my|老师/lǎo shī/teacher","She is my teacher.")
+    ]},
+    {title:"有 and 没有", rule:"有 means have, and also there is. Its opposite is 没有, never 不有.",
+     ex:[
+      E("我/wǒ/I|有/yǒu/have|一/yí/one|个/gè/(measure word)|朋友/péng you/friend","I have a friend."),
+      E("我/wǒ/I|没有/méi yǒu/don't have|时间/shí jiān/time","I don't have time."),
+      E("家/jiā/home|里/li/inside|有/yǒu/there is|人/rén/person|吗/ma/(question)","Is anyone home?")
+    ]},
+    {title:"很 plus a describing word", rule:"Describing words don't need 是. 很 sits in front and is weak: it often just means is.", note:"With no 很, the sentence can sound like a comparison.",
+     ex:[
+      E("我/wǒ/I|很/hěn/(is)|忙/máng/busy","I'm busy."),
+      E("今天/jīn tiān/today|很/hěn/(is)|热/rè/hot","It's hot today."),
+      E("这个/zhè ge/this one|很/hěn/(is)|贵/guì/expensive","This one is expensive."),
+      E("我/wǒ/I|不/bù/not|忙/máng/busy","I'm not busy.")
+    ]},
+    {title:"When and where come before the verb", rule:"Subject + when + where + verb + object.", note:"English can put 'tomorrow' at the end. Chinese can't.",
+     ex:[
+      E("我/wǒ/I|明天/míng tiān/tomorrow|去/qù/go|朋友/péng you/friend|家/jiā/home","I'm going to my friend's place tomorrow."),
+      E("我/wǒ/I|在/zài/at|家/jiā/home|吃饭/chī fàn/eat","I eat at home."),
+      E("我/wǒ/I|今天/jīn tiān/today|下午/xià wǔ/afternoon|在/zài/at|家/jiā/home|看书/kàn shū/read","I'm reading at home this afternoon."),
+      E("我/wǒ/I|每天/měi tiān/every day|在/zài/at|家/jiā/home|学/xué/study|中文/zhōng wén/Chinese","I study Chinese at home every day.")
+    ]},
+    {title:"Yes/no questions: 吗 and 呢", rule:"吗 at the end makes a yes/no question. 呢 asks and what about …? after a topic.",
+     ex:[
+      E("你/nǐ/you|是/shì/are|印尼人/yìn ní rén/Indonesian|吗/ma/(question)|？","Are you Indonesian?"),
+      E("你/nǐ/you|想/xiǎng/want|喝/hē/drink|茶/chá/tea|吗/ma/(question)|？","Do you want some tea?"),
+      E("我/wǒ/I|很/hěn/(is)|好/hǎo/well|，|你/nǐ/you|呢/ne/and?|？","I'm fine, and you?")
+    ]},
+    {title:"Saying no: 不 and 没", rule:"不 negates 是, describing words, habits and the future. 没(有) negates 有 and things that did not happen.", note:"不 becomes bú before a 4th tone: 不是 bú shì, but 不好 bù hǎo.",
+     ex:[
+      E("我/wǒ/I|不/bú/not|是/shì/am|老师/lǎo shī/teacher","I'm not a teacher."),
+      E("我/wǒ/I|不/bù/not|知道/zhī dào/know","I don't know."),
+      E("我/wǒ/I|昨天/zuó tiān/yesterday|没/méi/didn't|去/qù/go|朋友/péng you/friend|家/jiā/home","I didn't go to my friend's place yesterday.")
+    ]},
+    {title:"的 (of, 's)", rule:"Owner + 的 + thing. With close people, 的 is often dropped: 我朋友.",
+     ex:[
+      E("我/wǒ/I|的/de/'s|中文/zhōng wén/Chinese","my Chinese"),
+      E("朋友/péng you/friend|的/de/'s|家/jiā/home","my friend's home"),
+      E("这/zhè/this|是/shì/is|我/wǒ/I|的/de/'s","This is mine.")
+    ]},
+    {title:"Counting things", rule:"Number + measure word + thing. 个 works for most people and objects. Say 两, not 二, before a measure word.",
+     ex:[
+      E("一/yí/one|个/gè/(measure word)|人/rén/person","one person"),
+      E("两/liǎng/two|个/gè/(measure word)|朋友/péng you/friend","two friends"),
+      E("三/sān/three|杯/bēi/cup of|茶/chá/tea","three cups of tea"),
+      E("五/wǔ/five|本/běn/(for books)|书/shū/book","five books")
+    ]},
+    {title:"Want, can, may", rule:"想 would like to · 要 want, need · 会 can (learned skill) · 能 can (able) · 可以 may (allowed).",
+     ex:[
+      E("我/wǒ/I|想/xiǎng/want to|学/xué/learn|中文/zhōng wén/Chinese","I want to learn Chinese."),
+      E("我/wǒ/I|想/xiǎng/would like|去/qù/go|中国/zhōng guó/China","I'd like to go to China."),
+      E("你/nǐ/you|能/néng/can|帮/bāng/help|我/wǒ/me|吗/ma/(question)|？","Can you help me?"),
+      E("我/wǒ/I|可以/kě yǐ/may|问/wèn/ask|一下/yí xià/a moment|吗/ma/(question)|？","May I ask something?")
+    ]}
+  ]},
+
+  {id:"questions", title:"Question words", intro:"Keep the normal word order and put the question word where the answer would go.",
+   blocks:[
+    {title:"Who, what, where, how, why", rule:"你住在哪里？ asks about the place, and the answer fills the same slot: 我住在雅加达。",
+     ex:[
+      E("这/zhè/this|是/shì/is|什么/shén me/what|？","What is this?"),
+      E("你/nǐ/you|是/shì/are|谁/shéi/who|？","Who are you?"),
+      E("你/nǐ/you|住/zhù/live|在/zài/at|哪里/nǎ lǐ/where|？","Where do you live?"),
+      E("洗手间/xǐ shǒu jiān/restroom|在/zài/is at|哪里/nǎ lǐ/where|？","Where is the restroom?"),
+      E("你/nǐ/you|怎么/zěn me/how|去/qù/go|那里/nà lǐ/there|？","How do you get there?"),
+      E("你/nǐ/you|为什么/wèi shén me/why|学/xué/learn|中文/zhōng wén/Chinese|？","Why are you learning Chinese?"),
+      E("因为/yīn wèi/because|我/wǒ/I|喜欢/xǐ huan/like|中文/zhōng wén/Chinese","Because I like Chinese.")
+    ]},
+    {title:"How many, how much, which", rule:"几 is for small numbers (about ten or fewer). 多少 is for any amount. 哪 asks which one.",
+     ex:[
+      E("这个/zhè ge/this one|多少/duō shao/how much|钱/qián/money|？","How much is this?"),
+      E("你/nǐ/you|有/yǒu/have|几/jǐ/how many|个/gè/(measure word)|朋友/péng you/friend|？","How many friends do you have?"),
+      E("你/nǐ/you|喜欢/xǐ huan/like|哪个/nǎ ge/which one|？","Which one do you like?")
+    ]}
+  ]},
+
+  {id:"time", title:"Time and dates", intro:"Hour first, then minutes. Part of the day goes before the hour.",
+   blocks:[
+    {title:"Clock time: number + 点", rule:"Hour + 点. Add minutes with 分, or use 半 (half) and 一刻 (quarter).", note:"Two o'clock is 两点, not 二点.",
+     ex:[
+      E("三/sān/three|点/diǎn/o'clock","3:00"),
+      E("三/sān/three|点/diǎn/o'clock|十/shí/ten|分/fēn/minutes","3:10"),
+      E("三/sān/three|点/diǎn/o'clock|一刻/yí kè/a quarter","3:15"),
+      E("三/sān/three|点/diǎn/o'clock|半/bàn/half","3:30"),
+      E("差/chà/short of|五/wǔ/five|分/fēn/minutes|三/sān/three|点/diǎn/o'clock","2:55 (five minutes short of three)"),
+      E("两/liǎng/two|点/diǎn/o'clock","2:00"),
+      E("十二/shí èr/twelve|点/diǎn/o'clock","12:00")
+    ]},
+    {title:"Parts of the day", rule:"Say the part of the day first, then the hour.",
+     ex:[
+      E("上午/shàng wǔ/morning|九/jiǔ/nine|点/diǎn/o'clock","9 a.m."),
+      E("下午/xià wǔ/afternoon|三/sān/three|点/diǎn/o'clock","3 p.m."),
+      E("晚上/wǎn shang/evening|八/bā/eight|点/diǎn/o'clock","8 p.m."),
+      E("早上/zǎo shang/early morning|中午/zhōng wǔ/noon|下午/xià wǔ/afternoon|晚上/wǎn shang/evening","Parts of the day")
+    ]},
+    {title:"Asking and answering", rule:"The time word sits before the verb, just like any other when-word.",
+     ex:[
+      E("现在/xiàn zài/now|几/jǐ/what|点/diǎn/o'clock|？","What time is it now?"),
+      E("现在/xiàn zài/now|三/sān/three|点/diǎn/o'clock|半/bàn/half","It's 3:30 now."),
+      E("你/nǐ/you|几点/jǐ diǎn/what time|吃饭/chī fàn/eat|？","What time do you eat?"),
+      E("我/wǒ/I|六/liù/six|点/diǎn/o'clock|吃饭/chī fàn/eat","I eat at six."),
+      E("你/nǐ/you|几点/jǐ diǎn/what time|回家/huí jiā/go home|？","What time do you go home?"),
+      E("我/wǒ/I|早上/zǎo shang/early morning|七/qī/seven|点/diǎn/o'clock|起床/qǐ chuáng/get up","I get up at 7 a.m."),
+      E("我/wǒ/I|晚上/wǎn shang/night|十/shí/ten|点/diǎn/o'clock|睡觉/shuì jiào/sleep","I go to sleep at 10 p.m.")
+    ]},
+    {title:"Days and dates", rule:"Weekday: 星期 + number. Month: number + 月. Date: number + 号.", note:"Sunday is 星期天 or 星期日. The month has no separate name: 十月 is 'ten month', October. The first example is today's date, built from your device clock.",
+     ex:[
+      todayEx(),
+      E("星期一/xīng qī yī/Monday|星期二/xīng qī èr/Tuesday|星期三/xīng qī sān/Wednesday|星期四/xīng qī sì/Thursday|星期五/xīng qī wǔ/Friday|星期六/xīng qī liù/Saturday|星期天/xīng qī tiān/Sunday","Days of the week"),
+      E("今天/jīn tiān/today|星期/xīng qī/week|几/jǐ/which|？","What day of the week is it today?"),
+      E("今天/jīn tiān/today|几/jǐ/which|号/hào/day|？","What's the date today?")
+    ]}
+  ]},
+
+  {id:"numbers", title:"Numbers and money", intro:"Past ten, numbers are built from the digits.",
+   blocks:[
+    {title:"Big numbers", rule:"Tens are digit + 十. 万 means ten thousand, so 100,000 is 十万.", note:"In phone numbers and room numbers, 1 is said yāo instead of yī, so it can't be mistaken for 7 (qī).",
+     ex:[
+      E("十一/shí yī/eleven|二十/èr shí/twenty|三十五/sān shí wǔ/thirty-five|九十九/jiǔ shí jiǔ/ninety-nine","11, 20, 35, 99"),
+      E("一百/yì bǎi/one hundred|一千/yì qiān/one thousand|一万/yí wàn/ten thousand","100, 1,000, 10,000")
+    ]},
+    {title:"Prices", rule:"Written money is 元, but people say 块.",
+     ex:[
+      E("五十/wǔ shí/fifty|块/kuài/yuan","50 yuan"),
+      E("太/tài/too|贵/guì/expensive|了/le/(emphasis)","Too expensive!"),
+      E("可以/kě yǐ/may|便宜/pián yi/cheap|一点/yì diǎn/a little|吗/ma/(question)|？","Can it be a bit cheaper?"),
+      E("我/wǒ/I|要/yào/want|这个/zhè ge/this one","I'll take this one.")
+    ]}
+  ]},
+
+  {id:"daily", title:"Daily life", intro:"The sentences you would actually say in a day: food, places, feelings, family. The same characters keep coming back on purpose.",
+   blocks:[
+    {title:"Food and drink", rule:"想 + verb says what you feel like doing. 要 asks for something. 好吃 is tasty.",
+     ex:[
+      E("我/wǒ/I|饿/è/hungry|了/le/(now)","I'm hungry."),
+      E("你/nǐ/you|想/xiǎng/want|吃/chī/eat|什么/shén me/what|？","What do you want to eat?"),
+      E("我/wǒ/I|想/xiǎng/want to|喝/hē/drink|水/shuǐ/water","I want some water."),
+      E("我/wǒ/I|要/yào/want|一/yì/one|杯/bēi/cup of|咖啡/kā fēi/coffee","I'd like a cup of coffee."),
+      E("这个/zhè ge/this one|很/hěn/very|好吃/hǎo chī/tasty","This is delicious."),
+      E("一起/yì qǐ/together|吃饭/chī fàn/eat|吧/ba/(let's)","Let's eat together."),
+      E("我/wǒ/I|喜欢/xǐ huan/like|喝/hē/drink|茶/chá/tea","I like drinking tea.")
+    ]},
+    {title:"Places and moving", rule:"在 says where you are. 去 goes away from you, 来 comes toward you, 回 returns.",
+     ex:[
+      E("你/nǐ/you|在/zài/at|哪里/nǎ lǐ/where|？","Where are you?"),
+      E("我/wǒ/I|在/zài/at|家/jiā/home","I'm at home."),
+      E("你/nǐ/you|去/qù/go|哪里/nǎ lǐ/where|？","Where are you going?"),
+      E("我/wǒ/I|去/qù/go|朋友/péng you/friend|家/jiā/home","I'm going to my friend's place."),
+      E("我/wǒ/I|回家/huí jiā/go home","I'm going home."),
+      E("你/nǐ/you|来/lái/come|吗/ma/(question)|？","Are you coming?"),
+      E("我/wǒ/I|不/bú/not|去/qù/go","I'm not going.")
+    ]},
+    {title:"Feelings and weather", rule:"Describing words take 很. 有点 means a bit, usually about something not great.",
+     ex:[
+      E("我/wǒ/I|很/hěn/very|高兴/gāo xìng/happy","I'm very happy."),
+      E("我/wǒ/I|很/hěn/very|累/lèi/tired","I'm very tired."),
+      E("我/wǒ/I|有点/yǒu diǎn/a bit|累/lèi/tired","I'm a bit tired."),
+      E("你/nǐ/you|累/lèi/tired|吗/ma/(question)|？","Are you tired?"),
+      E("今天/jīn tiān/today|天气/tiān qì/weather|很/hěn/very|好/hǎo/good","The weather is nice today."),
+      E("下雨/xià yǔ/rain|了/le/(now)","It's raining.")
+    ]},
+    {title:"Family", rule:"Family words double the character: 爸爸, 妈妈. Say 我家 for my family.",
+     ex:[
+      E("这/zhè/this|是/shì/is|我/wǒ/my|爸爸/bà ba/dad","This is my dad."),
+      E("这/zhè/this|是/shì/is|我/wǒ/my|妈妈/mā ma/mom","This is my mom."),
+      E("我/wǒ/my|家/jiā/family|有/yǒu/has|四/sì/four|个/gè/(measure word)|人/rén/people","There are four people in my family."),
+      E("他们/tā men/they|都/dōu/all|很/hěn/very|好/hǎo/well","They are all well.")
+    ]}
+  ]},
+
+  {id:"aspect", title:"Doing, done, about to", intro:"Chinese does not change the verb. A small word near it says whether it is happening, finished or coming.",
+   blocks:[
+    {title:"在: happening right now", rule:"在 + verb means doing it now.",
+     ex:[
+      E("我/wǒ/I|在/zài/(doing now)|吃饭/chī fàn/eat","I'm eating."),
+      E("他/tā/he|在/zài/(doing now)|看书/kàn shū/read","He's reading."),
+      E("你/nǐ/you|在/zài/(doing now)|做/zuò/do|什么/shén me/what|？","What are you doing?")
+    ]},
+    {title:"了: it happened", rule:"了 right after the verb marks a finished action. At the end of a question, 了吗 asks if it is done.",
+     ex:[
+      E("我/wǒ/I|吃/chī/eat|了/le/(done)","I ate."),
+      E("我/wǒ/I|昨天/zuó tiān/yesterday|去/qù/go|了/le/(done)|朋友/péng you/friend|家/jiā/home","I went to my friend's place yesterday."),
+      E("你/nǐ/you|吃饭/chī fàn/eat|了/le/(done)|吗/ma/(question)|？","Have you eaten?"),
+      E("我/wǒ/I|还/hái/still|没/méi/not|吃饭/chī fàn/eat","I haven't eaten yet.")
+    ]},
+    {title:"了 at the end: a new situation", rule:"Sentence-final 了 says something has now become true.",
+     ex:[
+      E("我/wǒ/I|饿/è/hungry|了/le/(now)","I'm hungry now."),
+      E("太/tài/too|贵/guì/expensive|了/le/(now)","That's too expensive."),
+      E("我/wǒ/I|知道/zhī dào/know|了/le/(now)","I get it now."),
+      E("好/hǎo/good|了/le/(now)","OK, done.")
+    ]},
+    {title:"要 … 了: about to", rule:"要 + verb + 了 means it is about to happen.",
+     ex:[
+      E("要/yào/about to|下雨/xià yǔ/rain|了/le/(soon)","It's about to rain."),
+      E("我/wǒ/I|要/yào/about to|回家/huí jiā/go home|了/le/(soon)","I'm about to go home.")
+    ]},
+    {title:"过: have done it before", rule:"Verb + 过 means you have had the experience. Its negative is 没 + verb + 过.",
+     ex:[
+      E("你/nǐ/you|去/qù/go|过/guò/(ever)|中国/zhōng guó/China|吗/ma/(question)|？","Have you ever been to China?"),
+      E("我/wǒ/I|没/méi/not|去/qù/go|过/guò/(ever)","I haven't (been)."),
+      E("我/wǒ/I|吃/chī/eat|过/guò/(ever)","I've eaten it before.")
+    ]}
+  ]},
+
+  {id:"linking", title:"Linking ideas", intro:"Small words that join sentences. You will hear these in almost every conversation.",
+   blocks:[
+    {title:"和 · 也 · 都: and, also, all", rule:"和 joins nouns. 也 and 都 sit right before the verb.", note:"都 and 也 together: 也都.",
+     ex:[
+      E("你/nǐ/you|和/hé/and|我/wǒ/me","you and me"),
+      E("我/wǒ/I|也/yě/also|是/shì/am","Me too."),
+      E("我/wǒ/I|和/hé/and|朋友/péng you/friend|都/dōu/both|喜欢/xǐ huan/like|喝/hē/drink|茶/chá/tea","My friend and I both like tea.")
+    ]},
+    {title:"但是: but", rule:"但是 starts the second half.",
+     ex:[
+      E("我/wǒ/I|想/xiǎng/want to|去/qù/go|，|但是/dàn shì/but|没有/méi yǒu/don't have|时间/shí jiān/time","I want to go, but I don't have time.")
+    ]},
+    {title:"因为 … 所以: because … so", rule:"Chinese often says both words.",
+     ex:[
+      E("因为/yīn wèi/because|我/wǒ/I|很/hěn/very|忙/máng/busy|，|所以/suǒ yǐ/so|不/bú/not|去/qù/go","Because I'm busy, I'm not going.")
+    ]},
+    {title:"先 … 然后: first … then", rule:"Lays out two steps in order.",
+     ex:[
+      E("我/wǒ/I|先/xiān/first|吃饭/chī fàn/eat|，|然后/rán hòu/then|看书/kàn shū/read","First I eat, then I read.")
+    ]},
+    {title:"有点 and 一点", rule:"有点 + describing word = a bit (and a bit negative). 一点 after a word = a little.",
+     ex:[
+      E("我/wǒ/I|有点/yǒu diǎn/a bit|忙/máng/busy","I'm a bit busy."),
+      E("请/qǐng/please|说/shuō/speak|慢/màn/slow|一点/yì diǎn/a little","Please speak a bit slower."),
+      E("便宜/pián yi/cheap|一点/yì diǎn/a little","A bit cheaper.")
+    ]}
+  ]},
+
+  {id:"react", title:"Reacting and getting unstuck", intro:"Short replies keep a conversation moving, and the survival phrases rescue you when it speeds up.",
+   blocks:[
+    {title:"Quick replies", rule:"Most real replies are one or two words.",
+     ex:[
+      E("好的/hǎo de/OK","OK."),
+      E("对/duì/right","Right."),
+      E("是/shì/is|吗/ma/(question)|？","Oh really?"),
+      E("真的/zhēn de/really|吗/ma/(question)|？","Really?"),
+      E("太/tài/too|好/hǎo/good|了/le/(emphasis)|！","Great!"),
+      E("没/méi/no|问题/wèn tí/problem","No problem."),
+      E("等/děng/wait|一下/yí xià/a moment","Wait a moment."),
+      E("知道/zhī dào/know|了/le/(now)","Got it."),
+      E("不/bù/not|行/xíng/OK","No way. / Not OK.")
+    ]},
+    {title:"When you are lost", rule:"Say these early and often. Asking is how people learn.",
+     ex:[
+      E("请/qǐng/please|再/zài/again|说/shuō/say|一遍/yí biàn/one time","Please say it again."),
+      E("请/qǐng/please|说/shuō/speak|慢/màn/slow|一点/yì diǎn/a little","Please speak a bit slower."),
+      E("我/wǒ/I|听不懂/tīng bu dǒng/can't understand","I don't understand (what I hear)."),
+      E("什么/shén me/what|意思/yì si/meaning|？","What does it mean?"),
+      E("这个/zhè ge/this|用/yòng/use|中文/zhōng wén/Chinese|怎么/zěn me/how|说/shuō/say|？","How do you say this in Chinese?"),
+      E("我/wǒ/I|不/bù/not|知道/zhī dào/know","I don't know.")
+    ]},
+    {title:"Asking politely", rule:"请 + verb (please …) · 想 + verb (I'd like to …) · 可以 + verb + 吗 (may I / could you …?)",
+     ex:[
+      E("请问/qǐng wèn/may I ask|，|洗手间/xǐ shǒu jiān/restroom|在/zài/is at|哪里/nǎ lǐ/where|？","Excuse me, where is the restroom?"),
+      E("请/qǐng/please|给/gěi/give|我/wǒ/me|一/yì/one|杯/bēi/cup|水/shuǐ/water","Please give me a glass of water."),
+      E("我/wǒ/I|想/xiǎng/would like|买/mǎi/buy|这个/zhè ge/this one","I'd like to buy this."),
+      E("可以/kě yǐ/could|帮/bāng/help|我/wǒ/me|一下/yí xià/a moment|吗/ma/(question)|？","Could you help me for a moment?"),
+      E("谢谢/xiè xie/thanks|你/nǐ/you|的/de/'s|帮助/bāng zhù/help","Thank you for your help.")
+    ]}
+  ]}
+];
+
+</script>
+<script>
 (function(){
-  var DATA = {
-    greetings: [
-      ["你好","nǐ hǎo","Hello","Two 3rd tones: said ní hǎo"],
-      ["您好","nín hǎo","Hello (polite: elders, clients, bosses)"],
-      ["早上好","zǎo shang hǎo","Good morning"],
-      ["晚上好","wǎn shang hǎo","Good evening"],
-      ["你好吗？","nǐ hǎo ma","How are you?"],
-      ["我很好，你呢？","wǒ hěn hǎo nǐ ne","I'm good, and you?"],
-      ["谢谢","xiè xie","Thank you"],
-      ["不客气","bú kè qi","You're welcome"],
-      ["对不起","duì bu qǐ","Sorry"],
-      ["没关系","méi guān xi","It's okay / never mind"],
-      ["请问","qǐng wèn","Excuse me, may I ask…"],
-      ["好久不见","hǎo jiǔ bú jiàn","Long time no see"],
-      ["再见","zài jiàn","Goodbye"]
-    ],
-    intro: [
-      ["你叫什么名字？","nǐ jiào shén me míng zi","What's your name?"],
-      ["我叫Isaac。","wǒ jiào","My name is Isaac."],
-      ["认识你很高兴。","rèn shi nǐ hěn gāo xìng","Nice to meet you."],
-      ["你是哪国人？","nǐ shì nǎ guó rén","Which country are you from?"],
-      ["我是印度尼西亚人。","wǒ shì yìn dù ní xī yà rén","I'm Indonesian."],
-      ["我住在雅加达。","wǒ zhù zài yǎ jiā dá","I live in Jakarta."],
-      ["你今年多大？","nǐ jīn nián duō dà","How old are you?"],
-      ["我今年三十岁。","wǒ jīn nián sān shí suì","I'm thirty this year."],
-      ["你做什么工作？","nǐ zuò shén me gōng zuò","What do you do for work?"],
-      ["我是老师。","wǒ shì lǎo shī","I'm a teacher."],
-      ["我是工程师。","wǒ shì gōng chéng shī","I'm an engineer."],
-      ["我在学中文。","wǒ zài xué zhōng wén","I'm learning Chinese."],
-      ["我的中文不太好。","wǒ de zhōng wén bú tài hǎo","My Chinese isn't very good (yet)."]
-    ],
-    survival: [
-      ["请再说一遍。","qǐng zài shuō yí biàn","Please say it again."],
-      ["请说慢一点。","qǐng shuō màn yì diǎn","Please speak a bit slower."],
-      ["我听不懂。","wǒ tīng bu dǒng","I don't understand (what I hear)."],
-      ["什么意思？","shén me yì si","What does it mean?"],
-      ["这个用中文怎么说？","zhè ge yòng zhōng wén zěn me shuō","How do you say this in Chinese?"],
-      ["我不知道。","wǒ bù zhī dào","I don't know."],
-      ["对。","duì","Right / correct."],
-      ["没问题。","méi wèn tí","No problem."]
-    ],
-    numbers: [
-      ["零","líng","0"],["一","yī","1"],["二","èr","2"],["三","sān","3"],["四","sì","4"],["五","wǔ","5"],
-      ["六","liù","6"],["七","qī","7"],["八","bā","8"],["九","jiǔ","9"],["十","shí","10"],
-      ["十一","shí yī","11"],["二十","èr shí","20"],["三十","sān shí","30"],["一百","yì bǎi","100"],
-      ["两个","liǎng ge","Two (of something): use 两, not 二, before a measure word"]
-    ],
-    core: [
-      ["我","wǒ","I, me"],["你","nǐ","you"],["他","tā","he"],["她","tā","she"],["我们","wǒ men","we, us"],
-      ["是","shì","to be (am / is / are)"],["不","bù","not"],["有","yǒu","to have; there is"],["没有","méi yǒu","don't have; didn't"],
-      ["的","de","'s (possessive): 我的 = my"],["在","zài","at, in; (doing) right now"],["了","le","marks a completed action or a change"],
-      ["吗","ma","turns a sentence into a yes/no question"],["呢","ne","\"and …?\" (你呢？ = and you?)"],
-      ["这","zhè","this"],["那","nà","that"],["什么","shén me","what"],["谁","shéi","who"],["哪里","nǎ lǐ","where"],
-      ["怎么","zěn me","how"],["为什么","wèi shén me","why"],["多少","duō shao","how many, how much"],
-      ["好","hǎo","good"],["很","hěn","very"],["要","yào","to want, to need"],["想","xiǎng","would like to; to think, to miss"],
-      ["去","qù","to go"],["来","lái","to come"],["吃","chī","to eat"],["喝","hē","to drink"],["看","kàn","to look, to watch, to read"],
-      ["说","shuō","to speak, to say"],["做","zuò","to do, to make"],["学习","xué xí","to study"],["喜欢","xǐ huan","to like"],
-      ["知道","zhī dào","to know (a fact)"],["会","huì","can (a learned skill)"],["可以","kě yǐ","may, can (allowed)"],
-      ["人","rén","person"],["朋友","péng you","friend"],["家","jiā","home, family"],["钱","qián","money"],
-      ["今天","jīn tiān","today"],["明天","míng tiān","tomorrow"],["昨天","zuó tiān","yesterday"],["现在","xiàn zài","now"],
-      ["中国","zhōng guó","China"],["中文","zhōng wén","Chinese (language)"]
-    ],
-    work: [
-      ["公司","gōng sī","company"],["经理","jīng lǐ","manager"],["同事","tóng shì","colleague"],["办公室","bàn gōng shì","office"],
-      ["开会","kāi huì","to have a meeting"],["问题","wèn tí","problem; question"],["维修","wéi xiū","repair, maintenance"],
-      ["几点？","jǐ diǎn","What time?"],
-      ["明天上午九点开会。","míng tiān shàng wǔ jiǔ diǎn kāi huì","Meeting tomorrow at 9 a.m."],
-      ["需要帮忙吗？","xū yào bāng máng ma","Do you need help?"],
-      ["我来处理。","wǒ lái chǔ lǐ","I'll handle it."],
-      ["准备好了。","zhǔn bèi hǎo le","It's ready."]
-    ]
-  };
-
-  var TONES = [
-    ["妈","mā","1st: high and flat","mother"],
-    ["麻","má","2nd: rising, like a question \"huh?\"","hemp"],
-    ["马","mǎ","3rd: low dip (often just low)","horse"],
-    ["骂","mà","4th: sharp fall, like a command","to scold"],
-    ["吗","ma","Neutral: short and light","question particle"]
-  ];
-  var RULES = [
-    ["你好","Two 3rd tones in a row: the first becomes 2nd.","你好 is written nǐ hǎo but said ní hǎo."],
-    ["不是","不 bù becomes bú before a 4th tone.","不是 bú shì (not), but 不好 bù hǎo."],
-    ["一个","一 yī changes too: yí before a 4th tone, yì before the others.","一个 yí ge, 一天 yì tiān. Plain yī when counting."],
-    ["谢谢","Neutral tone: particles and many second syllables are light.","谢谢 xiè xie, 朋友 péng you."]
-  ];
-  var INITIALS = [
-    ["b","八","bā","like p in \"spin\" (no puff)"],["p","爬","pá","p with a puff of air"],["m","妈","mā","as in English"],["f","发","fā","as in English"],
-    ["d","大","dà","like t in \"stop\" (no puff)"],["t","他","tā","t with a puff"],["n","拿","ná","as in English"],["l","拉","lā","as in English"],
-    ["g","哥","gē","like k in \"skin\" (no puff)"],["k","可","kě","k with a puff"],["h","喝","hē","raspier than English h"],
-    ["j","鸡","jī","\"j\" with tongue flat, smiling"],["q","七","qī","\"ch\" with tongue flat, smiling"],["x","西","xī","\"sh\" with tongue flat, smiling"],
-    ["zh","知","zhī","\"j\" with tongue curled back"],["ch","吃","chī","\"ch\" with tongue curled back"],["sh","是","shì","\"sh\" with tongue curled back"],["r","日","rì","between r and the s in \"pleasure\""],
-    ["z","字","zì","like ds in \"kids\""],["c","词","cí","like ts in \"cats\""],["s","四","sì","as in English s"]
-  ];
-  var FINALS = [
-    ["a","啊","ā"],["o","哦","ó"],["e","饿","è"],["i","衣","yī"],["u","五","wǔ"],["ü","鱼","yú"],
-    ["ai","爱","ài"],["ei","黑","hēi"],["ao","好","hǎo"],["ou","走","zǒu"],["an","看","kàn"],["en","人","rén"],
-    ["ang","忙","máng"],["eng","冷","lěng"],["ong","中","zhōng"],["er","二","èr"],
-    ["ia","家","jiā"],["ie","谢","xiè"],["iao","小","xiǎo"],["iu","六","liù"],["ian","天","tiān"],["in","心","xīn"],
-    ["iang","想","xiǎng"],["ing","名","míng"],["iong","用","yòng"],
-    ["ua","花","huā"],["uo","我","wǒ"],["uai","快","kuài"],["ui","对","duì"],["uan","晚","wǎn"],["un","春","chūn"],["uang","黄","huáng"],
-    ["üe","学","xué"],["üan","远","yuǎn"],["ün","云","yún"]
-  ];
-
-  // ---------- storage (per-viewer convenience only) ----------
-  var KEY="mfs-v1";
+  "use strict";
+  var KEY="mandarin-patterns-v1";
   function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
-  var state=load(); state.known=state.known||{};
+  var state=load();
 
-  // ---------- helpers ----------
   var MARKS={1:"āēīōūǖĀĒĪŌŪǕ",2:"áéíóúǘÁÉÍÓÚǗ",3:"ǎěǐǒǔǚǍĚǏǑǓǙ",4:"àèìòùǜÀÈÌÒÙǛ"};
   function toneOf(s){for(var t=1;t<=4;t++){for(var i=0;i<s.length;i++){if(MARKS[t].indexOf(s[i])>=0)return t}}return 5}
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-  var HAN=/\p{Script=Han}/u;
-  function ruby(h,p){
-    var toks=p.split(/\s+/).filter(Boolean),i=0,out="",lat="";
-    Array.from(h).forEach(function(ch){
-      if(HAN.test(ch)){
-        if(lat){out+='<span class="lat">'+esc(lat)+'</span>';lat="";}
-        var s=toks[i++]||"",t=toneOf(s);
-        out+='<ruby class="t'+t+'">'+ch+'<rt>'+esc(s)+'</rt></ruby>';
-      } else lat+=ch;
-    });
-    if(lat)out+='<span class="lat">'+esc(lat)+'</span>';
-    return out;
-  }
-  var PLAY='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+  var T3TO2={"ǎ":"á","ě":"é","ǐ":"í","ǒ":"ó","ǔ":"ú","ǚ":"ǘ"};
+  function said(s){return s.replace(/[ǎěǐǒǔǚ]/,function(c){return T3TO2[c]})}
+  var HAN=/[㐀-鿿]/;
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+  function plain(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
 
-  // ---------- speech ----------
-  var voice=null, synth=window.speechSynthesis;
-  var vEl=document.getElementById("voice");
+  /* ---------- speech ---------- */
+  var synth=window.speechSynthesis,voice=null,vEl=document.getElementById("voice");
   function pickVoice(){
     if(!synth){vEl.textContent="Audio isn't supported in this browser.";vEl.className="voice warn";return}
     var vs=synth.getVoices()||[];
-    voice=vs.find(function(v){return /^zh[-_]CN/i.test(v.lang)})||vs.find(function(v){return /^zh/i.test(v.lang)})||vs.find(function(v){return /chinese|mandarin|普通话|中文/i.test(v.name)})||null;
+    voice=vs.find(function(v){return /^zh[-_]CN/i.test(v.lang)})||vs.find(function(v){return /^zh/i.test(v.lang)})||null;
     if(voice){vEl.textContent="Voice: "+voice.name;vEl.className="voice"}
-    else if(vs.length){vEl.textContent="No Chinese voice on this device. Add Chinese (Simplified) in your system's speech or language settings.";vEl.className="voice warn"}
+    else if(vs.length){vEl.textContent="No Chinese voice on this device. Add Chinese (Simplified) in your system's language settings.";vEl.className="voice warn"}
   }
   if(synth){pickVoice();synth.onvoiceschanged=pickVoice;setTimeout(pickVoice,1200)}else pickVoice();
   function speak(text){
     if(!synth)return;
-    try{
-      synth.cancel();
-      var u=new SpeechSynthesisUtterance(text.replace(/Isaac/g,"Isaac"));
-      u.lang=voice?voice.lang:"zh-CN"; if(voice)u.voice=voice;
-      u.rate=state.slow?0.55:0.85;
-      synth.speak(u);
-    }catch(e){}
+    try{synth.cancel();var u=new SpeechSynthesisUtterance(text);u.lang=voice?voice.lang:"zh-CN";if(voice)u.voice=voice;u.rate=state.slow?0.55:0.85;synth.speak(u)}catch(e){}
   }
 
-  // ---------- render tones / rules / sounds ----------
-  var tt=document.getElementById("toneTiles");
-  TONES.forEach(function(r){
-    var b=document.createElement("button");b.type="button";b.className="tile";
-    b.innerHTML='<span class="lab t'+toneOf(r[1])+'">'+r[0]+'</span><span class="t'+toneOf(r[1])+'" style="font-weight:600">'+esc(r[1])+'</span><span class="hint">'+esc(r[2])+'<br>"'+esc(r[3])+'"</span>';
-    b.setAttribute("aria-label","Play "+r[1]);
-    b.addEventListener("click",function(){speak(r[0])});tt.appendChild(b);
-  });
-  var rl=document.getElementById("rules");
-  RULES.forEach(function(r){
-    var d=document.createElement("div");d.className="rule";
-    d.innerHTML='<button class="play" type="button" aria-label="Play '+esc(r[0])+'">'+PLAY+'</button><p><b>'+esc(r[1])+'</b><br><span class="note">'+esc(r[2])+'</span></p>';
-    d.querySelector("button").addEventListener("click",function(){speak(r[0])});rl.appendChild(d);
-  });
-  function tiles(id,arr,withHint){
-    var box=document.getElementById(id);
-    arr.forEach(function(r){
-      var b=document.createElement("button");b.type="button";b.className="tile";
-      b.innerHTML='<span class="lab">'+esc(r[0])+'</span><span class="ex t'+toneOf(r[2])+'">'+r[1]+'<small>'+esc(r[2])+'</small></span>'+(withHint&&r[3]?'<span class="hint">'+esc(r[3])+'</span>':'');
-      b.setAttribute("aria-label",r[0]+": play "+r[2]);
-      b.addEventListener("click",function(){speak(r[1])});box.appendChild(b);
+  /* ---------- ruby ---------- */
+  function rubyEl(h,p,cls){
+    var syl=p.split(" ").filter(Boolean),i=0,wrap=el("span",cls||"han"),list=[];
+    wrap.lang="zh-Hans";
+    Array.from(h).forEach(function(ch){
+      if(HAN.test(ch)){
+        var s=syl[i++]||"",r=el("ruby","t"+toneOf(s));
+        r.appendChild(document.createTextNode(ch));
+        var rt=el("rt",null,s);r.appendChild(rt);wrap.appendChild(r);list.push({rt:rt,s:s});
+      }else wrap.appendChild(document.createTextNode(ch));
     });
+    return {node:wrap,syl:list};
   }
-  tiles("initials",INITIALS,true); tiles("finals",FINALS,false);
 
-  // ---------- render phrase lists ----------
-  Object.keys(DATA).forEach(function(sec){
-    var box=document.querySelector('[data-list="'+sec+'"]');
-    DATA[sec].forEach(function(r,idx){
-      var id=sec+"-"+(idx+1);
-      var row=document.createElement("div");row.className="row";row.dataset.id=id;
-      row.innerHTML='<button class="play" type="button" aria-label="Play '+esc(r[0])+'">'+PLAY+'</button>'+
-        '<div class="body"><div class="han" lang="zh-Hans">'+ruby(r[0],r[1])+'</div>'+
-        '<button class="en" type="button">'+esc(r[2])+'</button>'+(r[3]?'<span class="note">'+esc(r[3])+'</span>':'')+'</div>'+
-        '<label class="know" for="k-'+id+'"><input type="checkbox" id="k-'+id+'"><span>Known</span></label>';
-      row.querySelector(".play").addEventListener("click",function(){speak(r[0])});
-      row.querySelector(".en").addEventListener("click",function(e){e.currentTarget.classList.toggle("shown")});
-      var cb=row.querySelector("input");cb.checked=!!state.known[id];row.classList.toggle("known",cb.checked);
-      cb.addEventListener("change",function(){if(cb.checked)state.known[id]=1;else delete state.known[id];row.classList.toggle("known",cb.checked);save();progress()});
-      box.appendChild(row);
+  /* ---------- core panel ---------- */
+  var coreList=document.getElementById("corelist"),coreIndex={},coreRows=[];
+  CORE.forEach(function(g){
+    var box=el("div","grp");box.appendChild(el("h3",null,g[0]));
+    g[1].forEach(function(w){
+      var b=el("button","cw");b.type="button";
+      var r=rubyEl(w[0],w[1]);b.appendChild(r.node);b.appendChild(el("span","m",w[2]));
+      b.setAttribute("aria-label",w[0]+", "+w[1]+", "+w[2]);
+      b.addEventListener("click",function(){speak(w[0])});
+      box.appendChild(b);
+      var row={btn:b,box:box,text:plain(w[0]+" "+w[1].replace(/ /g,"")+" "+w[1]+" "+w[2])};
+      coreRows.push(row);if(!coreIndex[w[0]])coreIndex[w[0]]=row;
+    });
+    box.__rows=coreRows.length;
+    coreList.appendChild(box);
+  });
+  var emptyEl=el("div","empty","No match. Try pinyin without tone marks, or an English word.");emptyEl.hidden=true;coreList.appendChild(emptyEl);
+  var countEl=document.getElementById("count"),filter=document.getElementById("filter");
+  function applyFilter(){
+    var q=plain(filter.value.trim()),shown=0;
+    coreRows.forEach(function(r){var ok=!q||r.text.indexOf(q)>=0;r.btn.hidden=!ok;if(ok)shown++});
+    coreList.querySelectorAll(".grp").forEach(function(g){g.hidden=!g.querySelector(".cw:not([hidden])")});
+    emptyEl.hidden=shown>0;
+    countEl.textContent=q?shown+" of "+coreRows.length:coreRows.length+" words";
+  }
+  filter.addEventListener("input",applyFilter);applyFilter();
+  function flashCore(h){
+    var r=coreIndex[h];if(!r)return;
+    if(filter.value){filter.value="";applyFilter()}
+    coreRows.forEach(function(x){x.btn.classList.remove("flash")});
+    r.btn.classList.add("flash");
+    coreList.scrollTop=Math.max(0,r.btn.offsetTop-coreList.clientHeight/3);
+    setTimeout(function(){r.btn.classList.remove("flash")},1600);
+  }
+
+  /* ---------- sections ---------- */
+  var PLAY='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+  var main=document.getElementById("main"),nav=document.getElementById("nav"),spokenRefs=[];
+
+  /* ---------- tiles: tones, sounds, characters ---------- */
+  function esc(x){return String(x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function addSpecial(id,title,intro,build){
+    var a=el("a",null,title);a.href="#"+id;nav.appendChild(a);
+    var sec=el("section");sec.id=id;sec.appendChild(el("h2",null,title));sec.appendChild(el("p","intro",intro));
+    build(sec);main.appendChild(sec);
+  }
+  function sub(sec,text,count){var h=el("h3","sub",text);if(count){h.appendChild(el("span","c",count))}sec.appendChild(h)}
+  function mkTile(box,labHtml,exHan,exPy,hint,say,aria){
+    var b=el("button","tile");b.type="button";
+    b.innerHTML=labHtml+(exHan?'<span class="tex t'+toneOf(exPy)+'">'+esc(exHan)+'<small>'+esc(exPy)+'</small></span>':'')+(hint?'<span class="hint">'+esc(hint)+'</span>':'');
+    b.setAttribute("aria-label",aria);b.addEventListener("click",function(){speak(say)});box.appendChild(b);
+  }
+
+  addSpecial("tones","Tones","The same syllable means different things depending on pitch. Tap each one and copy the pitch out loud.",function(sec){
+    var g=el("div","tiles tones");
+    TONES.forEach(function(r){
+      var t=toneOf(r[1]),b=el("button","tile");b.type="button";
+      b.innerHTML='<span class="lab t'+t+'">'+esc(r[0])+'</span><span class="t'+t+'" style="font-weight:600">'+esc(r[1])+'</span><span class="hint">'+esc(r[2])+'<br>"'+esc(r[3])+'"</span>';
+      b.setAttribute("aria-label","Play "+r[1]);b.addEventListener("click",function(){speak(r[0])});g.appendChild(b);
+    });
+    sec.appendChild(g);
+    sub(sec,"Tone changes in real speech");
+    var rl=el("div","trules");
+    TONE_RULES.forEach(function(r){
+      var d=el("div","trule"),pb=el("button","play");pb.type="button";pb.innerHTML=PLAY;pb.setAttribute("aria-label","Play "+r[0]);
+      pb.addEventListener("click",function(){speak(r[0])});d.appendChild(pb);
+      var p=el("p");p.innerHTML='<b>'+esc(r[1])+'</b><br><span class="note">'+esc(r[2])+'</span>';d.appendChild(p);rl.appendChild(d);
+    });
+    sec.appendChild(rl);
+  });
+
+  addSpecial("sounds","Sounds: initials and finals","A syllable is an initial (start sound) plus a final (end sound), plus a tone. Tap a tile to hear an example word. The tricky ones: q, x, j, zh, ch, sh, r, z, c and ü.",function(sec){
+    sub(sec,"Easy to mix up");
+    sec.appendChild(el("p","note","In zi, ci, si and zhi, chi, shi, ri the \"i\" is not \"ee\": it is just a buzz after the consonant. Only ji, qi, xi (and bi, di, li…) have a real \"ee\". That is why the three in each row sound close but differ."));
+    MIXUPS.forEach(function(m){
+      var row=el("div","mix");row.appendChild(el("div","mlab",m[0]));
+      m[1].forEach(function(x){mkTile(row,'','',x[1],'',x[0],x[0]+" "+x[1]);var last=row.lastChild;last.innerHTML='<span class="tex t'+toneOf(x[1])+'" style="font-size:26px">'+esc(x[0])+'</span><span class="t'+toneOf(x[1])+'" style="font-weight:600">'+esc(x[1])+'</span>'});
+      sec.appendChild(row);
+    });
+    sub(sec,"Initials");
+    var gi=el("div","tiles");
+    INITIALS.forEach(function(r){mkTile(gi,'<span class="lab">'+esc(r[0])+'</span>',r[1],r[2],r[3],r[1],r[0]+": play "+r[2])});
+    sec.appendChild(gi);
+    sub(sec,"Finals");
+    var gf=el("div","tiles");
+    FINALS.forEach(function(r){mkTile(gf,'<span class="lab">'+esc(r[0])+'</span>',r[1],r[2],'',r[1],r[0]+": play "+r[2])});
+    sec.appendChild(gf);
+  });
+
+  var charTotal=0;CHAR_TIERS.forEach(function(t){charTotal+=t.items.length});
+  addSpecial("chars","Core characters ("+charTotal+")","Ranked by how much everyday use they get, so you meet the same characters again and again. Learn the first 30 before anything else. The example under each one is a word you will see in the sentences below.",function(sec){
+    var n=0;
+    CHAR_TIERS.forEach(function(t,ti){
+      sub(sec,t.title,t.items.length+" characters");
+      sec.appendChild(el("p","note",t.note));
+      var g=el("div","ctiles");g.style.marginTop="8px";
+      t.items.forEach(function(r){
+        n++;
+        var tn=toneOf(r[1]),b=el("button","ctile");b.type="button";
+        b.innerHTML='<span class="rk">'+n+'</span><span class="cc t'+tn+'">'+esc(r[0])+'</span><span class="cp t'+tn+'">'+esc(r[1])+'</span><span class="cm">'+esc(r[2])+'</span><span class="cx">'+esc(r[3])+'<small>'+esc(r[4])+'</small></span>';
+        b.setAttribute("aria-label",r[0]+", "+r[1]+", "+r[2]);
+        var say=SAY_WORD.indexOf(r[0])>=0?r[3]:r[0];
+        b.addEventListener("click",function(){speak(say);b.querySelector(".cm").classList.toggle("shown")});
+        g.appendChild(b);
+      });
+      sec.appendChild(g);
     });
   });
-  function progress(){
-    var all=0,k=0;
-    Object.keys(DATA).forEach(function(sec){
-      var n=DATA[sec].length,c=0;
-      for(var i=1;i<=n;i++)if(state.known[sec+"-"+i])c++;
-      all+=n;k+=c;
-      var el=document.querySelector('[data-prog="'+sec+'"]');if(el)el.textContent=c+" / "+n+" known";
-    });
-    document.getElementById("total").textContent=k+" of "+all+" phrases and words known";
-  }
-  progress();
 
-  // ---------- toggles ----------
-  function bindToggle(id,key,cls){
+  SECTIONS.forEach(function(s){
+    var a=el("a",null,s.title);a.href="#"+s.id;nav.appendChild(a);
+    var sec=el("section");sec.id=s.id;
+    sec.appendChild(el("h2",null,s.title));sec.appendChild(el("p","intro",s.intro));
+    s.blocks.forEach(function(b){
+      var blk=el("div","block");blk.appendChild(el("h3",null,b.title));
+      blk.appendChild(el("p","rule",b.rule));if(b.note)blk.appendChild(el("p","note",b.note));
+      var list=el("div","exs");
+      b.ex.forEach(function(e){
+        var row=el("div","ex");
+        var zh=e.t.map(function(t){return t.h}).join("");
+        var pb=el("button","play");pb.type="button";pb.innerHTML=PLAY;pb.setAttribute("aria-label","Play: "+e.en);
+        pb.addEventListener("click",function(){speak(zh)});row.appendChild(pb);
+        var words=el("div","words"),all=[],pause=true;
+        e.t.forEach(function(t){
+          if(!t.p){var pu=el("span","tok punct",t.h);words.appendChild(pu);all.push(null);return}
+          var tk=el("button","tok");tk.type="button";
+          var r=rubyEl(t.h,t.p);tk.appendChild(r.node);
+          var g=el("span","g",t.g);tk.appendChild(g);
+          tk.setAttribute("aria-label",t.h+", "+t.p+", "+t.g);
+          tk.addEventListener("click",function(){speak(t.h);flashCore(t.h);g.classList.toggle("shown")});
+          words.appendChild(tk);
+          r.syl.forEach(function(x){all.push(x)});
+        });
+        /* mark 3rd tones that are normally said as 2nd (run of 3rds, split at punctuation) */
+        for(var i=0;i<all.length-1;i++){
+          var x=all[i],y=all[i+1];
+          if(x&&y&&toneOf(x.s)===3&&toneOf(y.s)===3){x.rt.classList.add("sandhi");x.rt.title="usually said: "+said(x.s);spokenRefs.push(x)}
+        }
+        row.appendChild(words);
+        var en=el("div","en",e.en);en.addEventListener("click",function(){en.classList.toggle("shown")});row.appendChild(en);
+        list.appendChild(row);
+      });
+      blk.appendChild(list);sec.appendChild(blk);
+    });
+    main.appendChild(sec);
+  });
+  spokenRefs.forEach(function(x){x.orig=x.s});
+  function applySpoken(){spokenRefs.forEach(function(x){x.rt.textContent=state.spoken?said(x.orig):x.orig})}
+
+  /* ---------- toggles ---------- */
+  function bind(id,key,cls,after){
     var b=document.getElementById(id);
-    function apply(){b.setAttribute("aria-pressed",state[key]?"true":"false");if(cls)document.body.classList.toggle(cls,!!state[key]);}
+    function apply(){b.setAttribute("aria-pressed",state[key]?"true":"false");if(cls)document.body.classList.toggle(cls,!!state[key]);if(after)after()}
     b.addEventListener("click",function(){state[key]=!state[key];
-      if(key==="hideEn")document.querySelectorAll(".en.shown").forEach(function(e){e.classList.remove("shown")});
+      if(key==="hideGloss")document.querySelectorAll(".shown").forEach(function(e){e.classList.remove("shown")});
       apply();save()});
     apply();
   }
-  bindToggle("slow","slow",null); bindToggle("hidePy","hidePy","hide-py"); bindToggle("hideEn","hideEn","hide-en");
+  bind("slow","slow",null);bind("hidePy","hidePy","hide-py");bind("hideGloss","hideGloss","hide-gloss");bind("spoken","spoken",null,applySpoken);
+
+  /* ---------- mobile drawer ---------- */
+  var openBtn=document.getElementById("openCore"),closeBtn=document.getElementById("close");
+  openBtn.addEventListener("click",function(){document.body.classList.add("core-open");filter.focus({preventScroll:true})});
+  closeBtn.addEventListener("click",function(){document.body.classList.remove("core-open");openBtn.focus()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&document.body.classList.contains("core-open")){document.body.classList.remove("core-open");openBtn.focus()}});
 })();
 </script>
-
-</body></html>
