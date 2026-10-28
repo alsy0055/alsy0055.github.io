@@ -1,0 +1,440 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mandarin Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap">
+<style>
+/* Layout: one centered column. Setup screen (level, words, length) → question card with four answers → results. Same palette and faces as Mandarin Basics so the two pages feel like one set. */
+:root{
+  --bg:#f4f6f5; --surface:#ffffff; --fg:#18201d; --muted:#56625e; --line:#dbe2df; --accent:#0d7a60; --accent-ink:#ffffff; --chip:#e7eeeb;
+  --good:#1f7a33; --good-bg:#e3f3e6; --bad:#b3261e; --bad-bg:#fbe6e4;
+  --t1:#c0262d; --t2:#1f7a33; --t3:#1557b0; --t4:#7a2aa0; --t5:#6a716e;
+  --han:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26;
+  --good:#74d68a; --good-bg:#17301f; --bad:#ff8a80; --bad-bg:#3a1c1a;
+  --t1:#ff7b73; --t2:#74d68a; --t3:#7ab6ff; --t4:#d79bf7; --t5:#a3aca8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111614; --surface:#18201d; --fg:#e5ece9; --muted:#9aa7a2; --line:#2a3430; --accent:#45c7a0; --accent-ink:#0b1210; --chip:#202a26;
+  --good:#74d68a; --good-bg:#17301f; --bad:#ff8a80; --bad-bg:#3a1c1a;
+  --t1:#ff7b73; --t2:#74d68a; --t3:#7ab6ff; --t4:#d79bf7; --t5:#a3aca8; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--han);margin:0;text-wrap:balance}
+h1{font-size:25px} h1 .zh{color:var(--accent);margin-left:6px}
+h2{font-size:18px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t5{color:var(--t5)}
+
+/* setup */
+.group{display:flex;flex-direction:column;gap:8px}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.lv{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.lv:hover{border-color:var(--accent)}
+.lv[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.lv .top{display:flex;gap:8px;align-items:baseline}
+.lv .n{white-space:nowrap;font-size:12px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.lv .name{font-weight:600}
+.lv .d{font-size:13px;color:var(--muted);line-height:1.35}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;cursor:pointer;font-size:14px;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:12px 22px;font-weight:600;font-size:16px;cursor:pointer;align-self:flex-start}
+.secondary{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px;cursor:pointer}
+.secondary:hover{border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.voice{font-size:12px;color:var(--muted)} .voice.warn{color:var(--bad)}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px}
+.tip ul{margin:6px 0 0;padding-left:18px} .tip li{margin:2px 0}
+
+/* quiz */
+.bar{display:flex;align-items:center;gap:12px}
+.track{flex:1;height:6px;background:var(--chip);border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-height:190px;justify-content:center}
+.ask{font-size:13px;color:var(--muted)}
+.big{font-family:var(--han);font-size:72px;line-height:1.15}
+.big.long{font-size:56px}
+.pyBig{font-size:30px;font-weight:600;letter-spacing:.01em}
+.mBig{font-size:24px;font-weight:600;max-width:30ch}
+.playBig{width:84px;height:84px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;display:grid;place-items:center}
+.playBig svg{width:30px;height:30px}
+.replay{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 12px 12px 40px;text-align:left;cursor:pointer;position:relative;min-height:58px;display:flex;align-items:center;min-width:0;overflow-wrap:anywhere}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);font-weight:700;width:18px;height:18px;border:1px solid var(--line);border-radius:5px;display:grid;place-items:center}
+.opt.han{font-family:var(--han);font-size:30px;justify-content:center;padding-left:12px}
+.opt.han .k{top:10px;transform:none}
+.opt.py{font-size:20px;font-weight:600;justify-content:center;padding-left:12px}
+.opt.py .k{top:10px;transform:none}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--good-bg);border-color:var(--good);color:var(--fg)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.opt.dim{opacity:.55}
+.reveal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 14px;align-items:center}
+.reveal .rh{font-family:var(--han);font-size:40px;line-height:1.1}
+.reveal .rp{font-weight:600;font-size:17px}
+.reveal .rm{color:var(--muted)}
+.reveal .rx{font-family:var(--han);font-size:15px}
+.reveal .rx small{font-family:var(--sans);color:var(--muted);margin-left:4px}
+.verdict{grid-column:1/-1;font-weight:700}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.play{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--chip);cursor:pointer;display:grid;place-items:center}
+.play svg{width:15px;height:15px}
+.hint{font-size:12.5px;color:var(--muted)}
+kbd{font-family:var(--sans);font-size:11.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface)}
+
+/* results */
+.score{font-family:var(--han);font-size:44px;line-height:1.1}
+.missed{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mrow{display:grid;grid-template-columns:auto 5.5rem 7rem minmax(0,1fr);gap:12px;align-items:center;padding:8px 12px;border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0}
+.mrow .h{font-family:var(--han);font-size:24px}
+.mrow .p{font-weight:600}
+.mrow .m{color:var(--muted);font-size:14px}
+
+@media (max-width:520px){
+  .big{font-size:60px} .big.long{font-size:44px}
+  .opt.han{font-size:26px}
+  .mrow{grid-template-columns:auto 4.5rem minmax(0,1fr)} .mrow .m{grid-column:2/-1}
+}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+
+<div class="wrap">
+  <header class="row" style="justify-content:space-between">
+    <h1>Mandarin Quiz <span class="zh">小测验</span></h1>
+    <span class="voice" id="voice">Checking for a Chinese voice…</span>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setup" class="wrap" style="gap:18px">
+    <div class="group">
+      <span class="label">Level</span>
+      <div class="levels" id="levels"></div>
+    </div>
+    <div class="group">
+      <span class="label">Words</span>
+      <div class="chips" id="pools"></div>
+      <span class="small muted" id="poolNote"></span>
+    </div>
+    <div class="group">
+      <span class="label">Questions</span>
+      <div class="chips" id="lengths"></div>
+    </div>
+    <div class="row">
+      <button class="chip" id="soundBtn" type="button" aria-pressed="true">Play sound after each answer</button>
+    </div>
+    <button class="primary" id="startBtn" type="button">Start</button>
+    <div class="tip">
+      <b>How I'd use it</b>
+      <ul>
+        <li>Start at level 1 with the first 30. Move up a level once you score about 9 out of 10 twice in a row.</li>
+        <li>Then widen the words: first 70, then all 118, then the core words.</li>
+        <li>Anything you miss comes back a few questions later. "My weak ones" collects what you keep getting wrong.</li>
+        <li>Say every answer out loud when it plays. That's free speaking practice.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="wrap" style="gap:14px" hidden>
+    <div class="bar">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <span class="count" id="count"></span>
+      <button class="secondary small" id="endBtn" type="button">End</button>
+    </div>
+    <div class="card" id="card"></div>
+    <div class="opts" id="opts"></div>
+    <div id="after" hidden></div>
+    <p class="hint">Keys: <kbd>1</kbd>–<kbd>4</kbd> to answer, <kbd>Enter</kbd> for next, <kbd>R</kbd> to play the sound again.</p>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="wrap" style="gap:14px" hidden></section>
+</div>
+
+<script>
+var DATA={"chars":[{"h":"我","p":"wǒ","m":"I, me","x":"我们","xp":"wǒ men","r":1},{"h":"你","p":"nǐ","m":"you","x":"你好","xp":"nǐ hǎo","r":2},{"h":"他","p":"tā","m":"he","x":"他们","xp":"tā men","r":3},{"h":"她","p":"tā","m":"she","x":"她们","xp":"tā men","r":4},{"h":"们","p":"men","m":"plural for people","x":"你们","xp":"nǐ men","r":5},{"h":"的","p":"de","m":"'s, of","x":"我的","xp":"wǒ de","r":6},{"h":"是","p":"shì","m":"to be","x":"是的","xp":"shì de","r":7},{"h":"不","p":"bù","m":"not","x":"不好","xp":"bù hǎo","r":8},{"h":"有","p":"yǒu","m":"to have","x":"有人","xp":"yǒu rén","r":9},{"h":"没","p":"méi","m":"not (didn't)","x":"没有","xp":"méi yǒu","r":10},{"h":"了","p":"le","m":"done, or changed","x":"好了","xp":"hǎo le","r":11},{"h":"在","p":"zài","m":"at; doing now","x":"在家","xp":"zài jiā","r":12},{"h":"吗","p":"ma","m":"yes/no question","x":"好吗","xp":"hǎo ma","r":13},{"h":"很","p":"hěn","m":"very","x":"很好","xp":"hěn hǎo","r":14},{"h":"也","p":"yě","m":"also","x":"也是","xp":"yě shì","r":15},{"h":"这","p":"zhè","m":"this","x":"这个","xp":"zhè ge","r":16},{"h":"那","p":"nà","m":"that","x":"那个","xp":"nà ge","r":17},{"h":"个","p":"gè","m":"general measure word","x":"一个","xp":"yí gè","r":18},{"h":"人","p":"rén","m":"person","x":"中国人","xp":"zhōng guó rén","r":19},{"h":"好","p":"hǎo","m":"good","x":"你好","xp":"nǐ hǎo","r":20},{"h":"去","p":"qù","m":"to go","x":"去中国","xp":"qù zhōng guó","r":21},{"h":"来","p":"lái","m":"to come","x":"来了","xp":"lái le","r":22},{"h":"吃","p":"chī","m":"to eat","x":"吃饭","xp":"chī fàn","r":23},{"h":"喝","p":"hē","m":"to drink","x":"喝水","xp":"hē shuǐ","r":24},{"h":"看","p":"kàn","m":"to look, watch, read","x":"看书","xp":"kàn shū","r":25},{"h":"说","p":"shuō","m":"to speak","x":"说中文","xp":"shuō zhōng wén","r":26},{"h":"想","p":"xiǎng","m":"to want to; to think","x":"想去","xp":"xiǎng qù","r":27},{"h":"要","p":"yào","m":"to want, need","x":"要水","xp":"yào shuǐ","r":28},{"h":"会","p":"huì","m":"can (a skill)","x":"会说","xp":"huì shuō","r":29},{"h":"都","p":"dōu","m":"all, both","x":"都是","xp":"dōu shì","r":30},{"h":"呢","p":"ne","m":"and …?","x":"你呢","xp":"nǐ ne","r":31},{"h":"和","p":"hé","m":"and","x":"你和我","xp":"nǐ hé wǒ","r":32},{"h":"什","p":"shén","m":"what (in 什么)","x":"什么","xp":"shén me","r":33},{"h":"么","p":"me","m":"(in 什么, 怎么)","x":"什么","xp":"shén me","r":34},{"h":"谁","p":"shéi","m":"who","x":"你是谁","xp":"nǐ shì shéi","r":35},{"h":"哪","p":"nǎ","m":"which","x":"哪里","xp":"nǎ lǐ","r":36},{"h":"几","p":"jǐ","m":"how many","x":"几点","xp":"jǐ diǎn","r":37},{"h":"怎","p":"zěn","m":"how (in 怎么)","x":"怎么","xp":"zěn me","r":38},{"h":"为","p":"wèi","m":"for; why (为什么)","x":"为什么","xp":"wèi shén me","r":39},{"h":"多","p":"duō","m":"many","x":"很多","xp":"hěn duō","r":40},{"h":"少","p":"shǎo","m":"few","x":"很少","xp":"hěn shǎo","r":41},{"h":"大","p":"dà","m":"big","x":"大家","xp":"dà jiā","r":42},{"h":"小","p":"xiǎo","m":"small","x":"很小","xp":"hěn xiǎo","r":43},{"h":"太","p":"tài","m":"too","x":"太好了","xp":"tài hǎo le","r":44},{"h":"对","p":"duì","m":"correct","x":"对不起","xp":"duì bu qǐ","r":45},{"h":"热","p":"rè","m":"hot","x":"很热","xp":"hěn rè","r":46},{"h":"冷","p":"lěng","m":"cold","x":"很冷","xp":"hěn lěng","r":47},{"h":"忙","p":"máng","m":"busy","x":"很忙","xp":"hěn máng","r":48},{"h":"累","p":"lèi","m":"tired","x":"很累","xp":"hěn lèi","r":49},{"h":"饿","p":"è","m":"hungry","x":"我饿了","xp":"wǒ è le","r":50},{"h":"贵","p":"guì","m":"expensive","x":"太贵了","xp":"tài guì le","r":51},{"h":"一","p":"yī","m":"1","x":"一点","xp":"yì diǎn","r":52},{"h":"二","p":"èr","m":"2","x":"二十","xp":"èr shí","r":53},{"h":"三","p":"sān","m":"3","x":"三十","xp":"sān shí","r":54},{"h":"四","p":"sì","m":"4","x":"四个","xp":"sì gè","r":55},{"h":"五","p":"wǔ","m":"5","x":"五点","xp":"wǔ diǎn","r":56},{"h":"六","p":"liù","m":"6","x":"六点","xp":"liù diǎn","r":57},{"h":"七","p":"qī","m":"7","x":"七点","xp":"qī diǎn","r":58},{"h":"八","p":"bā","m":"8","x":"八点","xp":"bā diǎn","r":59},{"h":"九","p":"jiǔ","m":"9","x":"九点","xp":"jiǔ diǎn","r":60},{"h":"十","p":"shí","m":"10","x":"十点","xp":"shí diǎn","r":61},{"h":"两","p":"liǎng","m":"2, before a measure word","x":"两个","xp":"liǎng gè","r":62},{"h":"今","p":"jīn","m":"this (today, this year)","x":"今天","xp":"jīn tiān","r":63},{"h":"明","p":"míng","m":"next; bright","x":"明天","xp":"míng tiān","r":64},{"h":"天","p":"tiān","m":"day; sky","x":"每天","xp":"měi tiān","r":65},{"h":"年","p":"nián","m":"year","x":"今年","xp":"jīn nián","r":66},{"h":"月","p":"yuè","m":"month; moon","x":"一月","xp":"yī yuè","r":67},{"h":"点","p":"diǎn","m":"o'clock; a dot","x":"三点","xp":"sān diǎn","r":68},{"h":"号","p":"hào","m":"day of the month","x":"五号","xp":"wǔ hào","r":69},{"h":"分","p":"fēn","m":"minute","x":"五分","xp":"wǔ fēn","r":70},{"h":"请","p":"qǐng","m":"please","x":"请问","xp":"qǐng wèn","r":71},{"h":"谢","p":"xiè","m":"to thank","x":"谢谢","xp":"xiè xie","r":72},{"h":"问","p":"wèn","m":"to ask","x":"请问","xp":"qǐng wèn","r":73},{"h":"见","p":"jiàn","m":"to see, meet","x":"再见","xp":"zài jiàn","r":74},{"h":"可","p":"kě","m":"can; may","x":"可以","xp":"kě yǐ","r":75},{"h":"以","p":"yǐ","m":"(in 可以)","x":"可以","xp":"kě yǐ","r":76},{"h":"知","p":"zhī","m":"to know","x":"知道","xp":"zhī dào","r":77},{"h":"道","p":"dào","m":"way; (in 知道)","x":"知道","xp":"zhī dào","r":78},{"h":"喜","p":"xǐ","m":"to like","x":"喜欢","xp":"xǐ huan","r":79},{"h":"欢","p":"huān","m":"(in 喜欢)","x":"喜欢","xp":"xǐ huan","r":80},{"h":"早","p":"zǎo","m":"early","x":"早上","xp":"zǎo shang","r":81},{"h":"晚","p":"wǎn","m":"late; evening","x":"晚上","xp":"wǎn shang","r":82},{"h":"星","p":"xīng","m":"star","x":"星期","xp":"xīng qī","r":83},{"h":"期","p":"qī","m":"period (in 星期)","x":"星期","xp":"xīng qī","r":84},{"h":"昨","p":"zuó","m":"yesterday (昨天)","x":"昨天","xp":"zuó tiān","r":85},{"h":"午","p":"wǔ","m":"noon","x":"中午","xp":"zhōng wǔ","r":86},{"h":"上","p":"shàng","m":"up; previous; morning","x":"上午","xp":"shàng wǔ","r":87},{"h":"下","p":"xià","m":"down; next; afternoon","x":"下午","xp":"xià wǔ","r":88},{"h":"现","p":"xiàn","m":"present","x":"现在","xp":"xiàn zài","r":89},{"h":"每","p":"měi","m":"every","x":"每天","xp":"měi tiān","r":90},{"h":"百","p":"bǎi","m":"hundred","x":"一百","xp":"yì bǎi","r":91},{"h":"块","p":"kuài","m":"yuan (spoken)","x":"五块","xp":"wǔ kuài","r":92},{"h":"家","p":"jiā","m":"home, family","x":"回家","xp":"huí jiā","r":93},{"h":"国","p":"guó","m":"country","x":"中国","xp":"zhōng guó","r":94},{"h":"中","p":"zhōng","m":"middle; China","x":"中文","xp":"zhōng wén","r":95},{"h":"文","p":"wén","m":"writing, language","x":"中文","xp":"zhōng wén","r":96},{"h":"钱","p":"qián","m":"money","x":"多少钱","xp":"duō shao qián","r":97},{"h":"水","p":"shuǐ","m":"water","x":"喝水","xp":"hē shuǐ","r":98},{"h":"茶","p":"chá","m":"tea","x":"喝茶","xp":"hē chá","r":99},{"h":"饭","p":"fàn","m":"meal, cooked rice","x":"吃饭","xp":"chī fàn","r":100},{"h":"书","p":"shū","m":"book","x":"看书","xp":"kàn shū","r":101},{"h":"朋","p":"péng","m":"(friend)","x":"朋友","xp":"péng you","r":102},{"h":"友","p":"yǒu","m":"(friend)","x":"朋友","xp":"péng you","r":103},{"h":"老","p":"lǎo","m":"old","x":"老师","xp":"lǎo shī","r":104},{"h":"师","p":"shī","m":"master, teacher","x":"老师","xp":"lǎo shī","r":105},{"h":"里","p":"lǐ","m":"inside","x":"这里","xp":"zhè lǐ","r":106},{"h":"回","p":"huí","m":"to return","x":"回家","xp":"huí jiā","r":107},{"h":"听","p":"tīng","m":"to listen","x":"听说","xp":"tīng shuō","r":108},{"h":"做","p":"zuò","m":"to do, make","x":"做饭","xp":"zuò fàn","r":109},{"h":"买","p":"mǎi","m":"to buy","x":"买水","xp":"mǎi shuǐ","r":110},{"h":"住","p":"zhù","m":"to live (reside)","x":"住在","xp":"zhù zài","r":111},{"h":"叫","p":"jiào","m":"to be called","x":"叫什么","xp":"jiào shén me","r":112},{"h":"给","p":"gěi","m":"to give","x":"给我","xp":"gěi wǒ","r":113},{"h":"学","p":"xué","m":"to learn","x":"学中文","xp":"xué zhōng wén","r":114},{"h":"爱","p":"ài","m":"to love","x":"我爱你","xp":"wǒ ài nǐ","r":115},{"h":"等","p":"děng","m":"to wait","x":"等一下","xp":"děng yí xià","r":116},{"h":"帮","p":"bāng","m":"to help","x":"帮我","xp":"bāng wǒ","r":117},{"h":"能","p":"néng","m":"can (able to)","x":"能来","xp":"néng lái","r":118}],"words":[{"h":"我","p":"wǒ","m":"I, me","g":"People"},{"h":"你","p":"nǐ","m":"you","g":"People"},{"h":"您","p":"nín","m":"you (polite)","g":"People"},{"h":"他","p":"tā","m":"he, him","g":"People"},{"h":"她","p":"tā","m":"she, her","g":"People"},{"h":"我们","p":"wǒ men","m":"we, us","g":"People"},{"h":"你们","p":"nǐ men","m":"you (plural)","g":"People"},{"h":"他们","p":"tā men","m":"they, them","g":"People"},{"h":"人","p":"rén","m":"person","g":"People"},{"h":"朋友","p":"péng you","m":"friend","g":"People"},{"h":"老师","p":"lǎo shī","m":"teacher","g":"People"},{"h":"爸爸","p":"bà ba","m":"dad","g":"People"},{"h":"妈妈","p":"mā ma","m":"mom","g":"People"},{"h":"的","p":"de","m":"'s, of (links owner or description to a noun)","g":"Grammar words"},{"h":"是","p":"shì","m":"to be (am, is, are)","g":"Grammar words"},{"h":"不","p":"bù","m":"not (changes to bú before a 4th tone)","g":"Grammar words"},{"h":"没","p":"méi","m":"not (didn't, haven't)","g":"Grammar words"},{"h":"有","p":"yǒu","m":"to have; there is","g":"Grammar words"},{"h":"没有","p":"méi yǒu","m":"don't have; there isn't","g":"Grammar words"},{"h":"吗","p":"ma","m":"turns a statement into a yes/no question","g":"Grammar words"},{"h":"呢","p":"ne","m":"and … ? (你呢？ = and you?)","g":"Grammar words"},{"h":"吧","p":"ba","m":"softener: let's…, OK?","g":"Grammar words"},{"h":"了","p":"le","m":"action finished, or situation changed","g":"Grammar words"},{"h":"在","p":"zài","m":"at, in; doing right now","g":"Grammar words"},{"h":"过","p":"guò","m":"have ever (experience)","g":"Grammar words"},{"h":"很","p":"hěn","m":"very (also links a subject to a describing word)","g":"Grammar words"},{"h":"也","p":"yě","m":"also, too","g":"Grammar words"},{"h":"都","p":"dōu","m":"all, both","g":"Grammar words"},{"h":"和","p":"hé","m":"and (between nouns)","g":"Grammar words"},{"h":"太","p":"tài","m":"too (太贵了 = too expensive)","g":"Grammar words"},{"h":"个","p":"gè","m":"general measure word","g":"Grammar words"},{"h":"请","p":"qǐng","m":"please","g":"Grammar words"},{"h":"给","p":"gěi","m":"to give; to, for","g":"Grammar words"},{"h":"有点","p":"yǒu diǎn","m":"a bit (有点累 = a bit tired)","g":"Grammar words"},{"h":"一点","p":"yì diǎn","m":"a little","g":"Grammar words"},{"h":"还","p":"hái","m":"still; yet","g":"Grammar words"},{"h":"先","p":"xiān","m":"first","g":"Grammar words"},{"h":"然后","p":"rán hòu","m":"then, after that","g":"Grammar words"},{"h":"但是","p":"dàn shì","m":"but","g":"Grammar words"},{"h":"因为","p":"yīn wèi","m":"because","g":"Grammar words"},{"h":"所以","p":"suǒ yǐ","m":"so, therefore","g":"Grammar words"},{"h":"想","p":"xiǎng","m":"to want to, would like to","g":"Want, can, may"},{"h":"要","p":"yào","m":"to want; need to; about to","g":"Want, can, may"},{"h":"会","p":"huì","m":"can (a learned skill)","g":"Want, can, may"},{"h":"能","p":"néng","m":"can (able to)","g":"Want, can, may"},{"h":"可以","p":"kě yǐ","m":"may; can (allowed)","g":"Want, can, may"},{"h":"喜欢","p":"xǐ huan","m":"to like","g":"Want, can, may"},{"h":"爱","p":"ài","m":"to love","g":"Want, can, may"},{"h":"什么","p":"shén me","m":"what","g":"Question words"},{"h":"谁","p":"shéi","m":"who","g":"Question words"},{"h":"哪","p":"nǎ","m":"which","g":"Question words"},{"h":"哪里","p":"nǎ lǐ","m":"where","g":"Question words"},{"h":"怎么","p":"zěn me","m":"how","g":"Question words"},{"h":"为什么","p":"wèi shén me","m":"why","g":"Question words"},{"h":"几","p":"jǐ","m":"how many (small numbers)","g":"Question words"},{"h":"多少","p":"duō shao","m":"how many, how much","g":"Question words"},{"h":"这","p":"zhè","m":"this","g":"Pointing and places"},{"h":"那","p":"nà","m":"that","g":"Pointing and places"},{"h":"这里","p":"zhè lǐ","m":"here","g":"Pointing and places"},{"h":"那里","p":"nà lǐ","m":"there","g":"Pointing and places"},{"h":"家","p":"jiā","m":"home, family","g":"Pointing and places"},{"h":"中国","p":"zhōng guó","m":"China","g":"Pointing and places"},{"h":"中文","p":"zhōng wén","m":"Chinese (language)","g":"Pointing and places"},{"h":"现在","p":"xiàn zài","m":"now","g":"Time"},{"h":"今天","p":"jīn tiān","m":"today","g":"Time"},{"h":"明天","p":"míng tiān","m":"tomorrow","g":"Time"},{"h":"昨天","p":"zuó tiān","m":"yesterday","g":"Time"},{"h":"每天","p":"měi tiān","m":"every day","g":"Time"},{"h":"早上","p":"zǎo shang","m":"early morning","g":"Time"},{"h":"上午","p":"shàng wǔ","m":"morning (before noon)","g":"Time"},{"h":"中午","p":"zhōng wǔ","m":"noon","g":"Time"},{"h":"下午","p":"xià wǔ","m":"afternoon","g":"Time"},{"h":"晚上","p":"wǎn shang","m":"evening, night","g":"Time"},{"h":"点","p":"diǎn","m":"o'clock","g":"Time"},{"h":"分","p":"fēn","m":"minute","g":"Time"},{"h":"半","p":"bàn","m":"half","g":"Time"},{"h":"刻","p":"kè","m":"quarter of an hour","g":"Time"},{"h":"星期","p":"xīng qī","m":"week","g":"Time"},{"h":"月","p":"yuè","m":"month","g":"Time"},{"h":"号","p":"hào","m":"day of the month","g":"Time"},{"h":"年","p":"nián","m":"year","g":"Time"},{"h":"去","p":"qù","m":"to go","g":"Verbs"},{"h":"来","p":"lái","m":"to come","g":"Verbs"},{"h":"回","p":"huí","m":"to return","g":"Verbs"},{"h":"吃","p":"chī","m":"to eat","g":"Verbs"},{"h":"喝","p":"hē","m":"to drink","g":"Verbs"},{"h":"看","p":"kàn","m":"to look, watch, read","g":"Verbs"},{"h":"说","p":"shuō","m":"to speak, say","g":"Verbs"},{"h":"听","p":"tīng","m":"to listen","g":"Verbs"},{"h":"做","p":"zuò","m":"to do, make","g":"Verbs"},{"h":"学","p":"xué","m":"to learn","g":"Verbs"},{"h":"知道","p":"zhī dào","m":"to know","g":"Verbs"},{"h":"住","p":"zhù","m":"to live (reside)","g":"Verbs"},{"h":"工作","p":"gōng zuò","m":"to work; work","g":"Verbs"},{"h":"叫","p":"jiào","m":"to be called","g":"Verbs"},{"h":"买","p":"mǎi","m":"to buy","g":"Verbs"},{"h":"帮","p":"bāng","m":"to help","g":"Verbs"},{"h":"等","p":"děng","m":"to wait","g":"Verbs"},{"h":"见","p":"jiàn","m":"to see, meet","g":"Verbs"},{"h":"睡觉","p":"shuì jiào","m":"to sleep","g":"Verbs"},{"h":"起床","p":"qǐ chuáng","m":"to get up","g":"Verbs"},{"h":"好","p":"hǎo","m":"good","g":"Describing words"},{"h":"大","p":"dà","m":"big","g":"Describing words"},{"h":"小","p":"xiǎo","m":"small","g":"Describing words"},{"h":"多","p":"duō","m":"many, much","g":"Describing words"},{"h":"少","p":"shǎo","m":"few, little","g":"Describing words"},{"h":"忙","p":"máng","m":"busy","g":"Describing words"},{"h":"累","p":"lèi","m":"tired","g":"Describing words"},{"h":"饿","p":"è","m":"hungry","g":"Describing words"},{"h":"高兴","p":"gāo xìng","m":"happy","g":"Describing words"},{"h":"贵","p":"guì","m":"expensive","g":"Describing words"},{"h":"便宜","p":"pián yi","m":"cheap","g":"Describing words"},{"h":"热","p":"rè","m":"hot","g":"Describing words"},{"h":"冷","p":"lěng","m":"cold","g":"Describing words"},{"h":"好吃","p":"hǎo chī","m":"tasty","g":"Describing words"},{"h":"水","p":"shuǐ","m":"water","g":"Things"},{"h":"茶","p":"chá","m":"tea","g":"Things"},{"h":"咖啡","p":"kā fēi","m":"coffee","g":"Things"},{"h":"饭","p":"fàn","m":"meal, cooked rice","g":"Things"},{"h":"书","p":"shū","m":"book","g":"Things"},{"h":"钱","p":"qián","m":"money","g":"Things"},{"h":"天气","p":"tiān qì","m":"weather","g":"Things"},{"h":"雨","p":"yǔ","m":"rain","g":"Things"},{"h":"一","p":"yī","m":"1","g":"Numbers"},{"h":"二","p":"èr","m":"2","g":"Numbers"},{"h":"两","p":"liǎng","m":"2 (before a measure word)","g":"Numbers"},{"h":"三","p":"sān","m":"3","g":"Numbers"},{"h":"四","p":"sì","m":"4","g":"Numbers"},{"h":"五","p":"wǔ","m":"5","g":"Numbers"},{"h":"六","p":"liù","m":"6","g":"Numbers"},{"h":"七","p":"qī","m":"7","g":"Numbers"},{"h":"八","p":"bā","m":"8","g":"Numbers"},{"h":"九","p":"jiǔ","m":"9","g":"Numbers"},{"h":"十","p":"shí","m":"10","g":"Numbers"},{"h":"百","p":"bǎi","m":"hundred","g":"Numbers"},{"h":"千","p":"qiān","m":"thousand","g":"Numbers"},{"h":"万","p":"wàn","m":"ten thousand","g":"Numbers"},{"h":"块","p":"kuài","m":"yuan (spoken)","g":"Numbers"}],"say":"了的个们吗呢和会为么什给点分号朋师块"};
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+var PLAY='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>';
+
+/* ---------- storage (this browser only) ---------- */
+var KEY="mandarin-quiz-v1";
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+var store=load(); store.stats=store.stats||{}; store.level=store.level||1; store.pool=store.pool||"c30"; store.len=store.len||20; if(store.sound==null)store.sound=true;
+
+/* ---------- items ---------- */
+var CHARS=DATA.chars.map(function(c){
+  var m=c.m, noMean=/^\(in /.test(m);
+  if(m==="(friend)")m="friend (in 朋友)";
+  return {h:c.h,p:c.p,m:m,x:c.x,xp:c.xp,r:c.r,noMean:noMean,kind:"char"};
+});
+var WORDS=DATA.words.map(function(w){return {h:w.h,p:w.p,m:w.m,kind:"word"}});
+var ALL=CHARS.concat(WORDS);
+var BY={};ALL.forEach(function(i){if(!BY[i.h])BY[i.h]=i});
+
+/* ---------- pinyin helpers ---------- */
+var MARKS={1:"āēīōūǖ",2:"áéíóúǘ",3:"ǎěǐǒǔǚ",4:"àèìòùǜ"},BASE="aeiouü";
+function sylTone(s){for(var t=1;t<=4;t++)for(var i=0;i<s.length;i++)if(MARKS[t].indexOf(s[i])>=0)return t;return 5}
+function toneOf(p){return sylTone(p.split(" ")[0])}
+function strip(s){return s.split("").map(function(c){for(var t=1;t<=4;t++){var k=MARKS[t].indexOf(c);if(k>=0)return BASE[k]}return c}).join("")}
+function placeTone(b,t){
+  if(t===5)return b;
+  var pos=b.indexOf("a");
+  if(pos<0)pos=b.indexOf("e");
+  if(pos<0&&b.indexOf("ou")>=0)pos=b.indexOf("o");
+  if(pos<0){for(var i=b.length-1;i>=0;i--)if(BASE.indexOf(b[i])>=0){pos=i;break}}
+  if(pos<0)return b;
+  return b.slice(0,pos)+MARKS[t][BASE.indexOf(b[pos])]+b.slice(pos+1);
+}
+function swapInitial(s){
+  var m=s.match(/^(zh|ch|sh|z|c|s|j|q|x)(.+)$/);if(!m)return null;
+  var ini=m[1],rest=m[2],bareI=strip(rest)==="i";
+  var to={zh:bareI?"j":"z",ch:bareI?"q":"c",sh:bareI?"x":"s",z:"zh",c:"ch",s:"sh",j:bareI?"zh":null,q:bareI?"ch":null,x:bareI?"sh":null}[ini];
+  return to?to+rest:null;
+}
+function pyColored(p){
+  var f=document.createDocumentFragment();
+  p.split(" ").forEach(function(s,i){if(i)f.appendChild(document.createTextNode(" "));f.appendChild(el("span","t"+sylTone(s),s))});
+  return f;
+}
+
+/* ---------- speech ---------- */
+var synth=window.speechSynthesis,voice=null,vEl=$("voice");
+function pickVoice(){
+  if(!synth){vEl.textContent="Sound isn't supported in this browser.";vEl.className="voice warn";return}
+  var vs=synth.getVoices()||[];
+  voice=vs.find(function(v){return /^zh[-_]CN/i.test(v.lang)})||vs.find(function(v){return /^zh/i.test(v.lang)})||null;
+  if(voice){vEl.textContent="Voice: "+voice.name;vEl.className="voice"}
+  else if(vs.length){vEl.textContent="No Chinese voice found. Add Chinese (Simplified) in your system's language settings.";vEl.className="voice warn"}
+}
+if(synth){pickVoice();synth.onvoiceschanged=pickVoice;setTimeout(pickVoice,1200)}else pickVoice();
+function sayText(item){return (item.kind==="char"&&DATA.say.indexOf(item.h)>=0&&item.x)?item.x:item.h}
+function speak(text){if(!synth)return;try{synth.cancel();var u=new SpeechSynthesisUtterance(text);u.lang=voice?voice.lang:"zh-CN";if(voice)u.voice=voice;u.rate=.8;synth.speak(u)}catch(e){}}
+
+/* ---------- levels, word sets ---------- */
+var LEVELS=[
+  {id:1,name:"Pinyin → meaning",d:"See the pinyin, pick the English. Start here.",show:"p",ans:"m",audio:true},
+  {id:2,name:"Character + pinyin → meaning",d:"The character with pinyin above it. Starts linking shape to sound.",show:"hp",ans:"m",audio:true},
+  {id:3,name:"Character → meaning",d:"Only the character. This is real reading.",show:"h",ans:"m",audio:false},
+  {id:4,name:"Character → pinyin",d:"Pick the right sound and tones. Wrong options differ by a tone or a look-alike sound like q / ch.",show:"h",ans:"p",audio:false},
+  {id:5,name:"Listen → character",d:"Hear it, pick the character. Trains your ear for tones.",show:"a",ans:"h",audio:true},
+  {id:6,name:"Meaning → character",d:"See the English, find the character. The hardest one.",show:"m",ans:"h",audio:false}
+];
+function isWeak(h){var s=store.stats[h];return !!s&&s.w>0&&(s.last===0||s.c/(s.c+s.w)<.75)}
+function weakItems(){return ALL.filter(function(i){return isWeak(i.h)})}
+var POOLS=[
+  {id:"c30",name:"First 30 characters",get:function(){return CHARS.filter(function(c){return c.r<=30})}},
+  {id:"c70",name:"First 70",get:function(){return CHARS.filter(function(c){return c.r<=70})}},
+  {id:"c118",name:"All 118 characters",get:function(){return CHARS}},
+  {id:"words",name:"Core words ("+WORDS.length+")",get:function(){return WORDS}},
+  {id:"weak",name:"My weak ones",get:weakItems}
+];
+function usable(items,lv){
+  return items.filter(function(i){
+    if(lv.ans==="m"||lv.show==="m"){if(i.noMean)return false}
+    if(lv.show==="a"&&i.kind==="char"&&DATA.say.indexOf(i.h)>=0)return false;
+    return true;
+  });
+}
+
+/* ---------- distractors ---------- */
+var STOP={to:1,a:1,an:1,of:1,in:1,the:1,and:1,or:1,for:1,before:1,word:1,is:1,are:1,am:1,be:1,with:1,on:1,at:1,it:1,"(in":1};
+function words(m){return m.toLowerCase().replace(/[()';,.?…!/=]/g," ").split(/\s+/).filter(function(w){return w&&!STOP[w]&&(w.length>2||/\d/.test(w))})}
+function overlap(a,b){var A=words(a);var B=words(b);return A.some(function(w){return B.indexOf(w)>=0})}
+function candidates(item,lv,pool){
+  var src=shuffle(pool).concat(shuffle(ALL));
+  var out=[],seen={};seen[item.h]=1;
+  for(var i=0;i<src.length&&out.length<3;i++){
+    var o=src[i];if(seen[o.h])continue;
+    if(lv.ans==="m"||lv.show==="m"){
+      if(o.noMean||o.m===item.m||overlap(o.m,item.m))continue;
+      if(lv.show==="p"&&strip(o.p)===strip(item.p)&&o.p===item.p)continue;
+    }
+    if(lv.ans==="h"){
+      if(o.p===item.p)continue;
+      if(lv.show==="a"&&[...o.h].length!==[...item.h].length&&i<pool.length)continue;
+    }
+    seen[o.h]=1;out.push(o);
+  }
+  return out;
+}
+function pinyinOptions(p){
+  var syl=p.split(" "),out=[p],tries=0;
+  function add(s){if(out.indexOf(s)<0)out.push(s)}
+  var sw=swapInitial(syl[0]);if(sw){var a=syl.slice();a[0]=sw;add(a.join(" "))}
+  while(out.length<4&&tries<80){
+    tries++;var b=syl.slice(),i=Math.floor(Math.random()*b.length),cur=sylTone(b[i]);
+    var ts=[1,2,3,4].filter(function(t){return t!==cur});
+    b[i]=placeTone(strip(b[i]),pick(ts));add(b.join(" "));
+  }
+  return shuffle(out);
+}
+
+/* ---------- setup screen ---------- */
+function renderSetup(){
+  var lv=$("levels");lv.innerHTML="";
+  LEVELS.forEach(function(L){
+    var b=el("button","lv");b.type="button";b.setAttribute("aria-pressed",store.level===L.id?"true":"false");
+    var top=el("span","top");top.appendChild(el("span","n","Level "+L.id));top.appendChild(el("span","name",L.name));
+    b.appendChild(top);b.appendChild(el("span","d",L.d));
+    b.addEventListener("click",function(){store.level=L.id;save();renderSetup()});
+    lv.appendChild(b);
+  });
+  var pl=$("pools");pl.innerHTML="";
+  var L=LEVELS[store.level-1];
+  POOLS.forEach(function(P){
+    var n=usable(P.get(),L).length;
+    var b=el("button","chip",P.id==="weak"?P.name+" ("+n+")":P.name);b.type="button";
+    b.disabled=n<4;b.setAttribute("aria-pressed",store.pool===P.id?"true":"false");
+    b.addEventListener("click",function(){store.pool=P.id;save();renderSetup()});
+    pl.appendChild(b);
+  });
+  if(store.pool==="weak"&&usable(weakItems(),L).length<4)store.pool="c30";
+  var cur=POOLS.find(function(P){return P.id===store.pool});
+  var items=usable(cur.get(),L);
+  $("poolNote").textContent=items.length+" items, e.g. "+items.slice(0,8).map(function(i){return i.h}).join(" ");
+  var ln=$("lengths");ln.innerHTML="";
+  [10,20,40].forEach(function(n){
+    var b=el("button","chip",n+"");b.type="button";b.setAttribute("aria-pressed",store.len===n?"true":"false");
+    b.addEventListener("click",function(){store.len=n;save();renderSetup()});ln.appendChild(b);
+  });
+  $("soundBtn").setAttribute("aria-pressed",store.sound?"true":"false");
+}
+$("soundBtn").addEventListener("click",function(){store.sound=!store.sound;save();renderSetup()});
+
+/* ---------- quiz ---------- */
+var S=null;
+function show(id){["setup","quiz","results"].forEach(function(x){$(x).hidden=x!==id});window.scrollTo(0,0)}
+function start(customItems){
+  var L=LEVELS[store.level-1];
+  var pool=customItems||usable(POOLS.find(function(P){return P.id===store.pool}).get(),L);
+  var q=[],sh=shuffle(pool);
+  while(q.length<Math.min(store.len,Math.max(store.len,0))){if(!sh.length)sh=shuffle(pool);q.push({item:sh.pop(),retry:false})}
+  if(customItems)q=shuffle(pool).map(function(i){return {item:i,retry:false}});
+  S={L:L,pool:pool,q:q,i:0,first:0,firstTotal:q.length,missed:[],answered:false};
+  show("quiz");ask();
+}
+function promptPlay(){if(!S||!S.q[S.i])return;speak(sayText(S.q[S.i].item))}
+function ask(){
+  var cur=S.q[S.i],it=cur.item,L=S.L;S.answered=false;
+  $("fill").style.width=(S.i/S.q.length*100)+"%";
+  $("count").textContent=(S.i+1)+" / "+S.q.length;
+  var card=$("card");card.innerHTML="";
+  var askTxt={m:"What does it mean?",p:"How is it said?",h:"Which character is it?"}[L.ans];
+  if(cur.retry)askTxt="Again: "+askTxt.charAt(0).toLowerCase()+askTxt.slice(1);
+  card.appendChild(el("div","ask",askTxt));
+  var long=[...it.h].length>2;
+  if(L.show==="p"){var d=el("div","pyBig");d.appendChild(pyColored(it.p));card.appendChild(d)}
+  if(L.show==="hp"){var d2=el("div","pyBig");d2.style.fontSize="20px";d2.appendChild(pyColored(it.p));card.appendChild(d2);card.appendChild(el("div","big"+(long?" long":""),it.h))}
+  if(L.show==="h"){card.appendChild(el("div","big"+(long?" long":""),it.h))}
+  if(L.show==="m"){card.appendChild(el("div","mBig",it.m))}
+  if(L.show==="a"){var pb=el("button","playBig");pb.type="button";pb.innerHTML=PLAY;pb.setAttribute("aria-label","Play the sound");pb.addEventListener("click",promptPlay);card.appendChild(pb);setTimeout(promptPlay,150)}
+  if(L.audio&&L.show!=="a"){var r=el("button","replay","▶ Hear it");r.type="button";r.addEventListener("click",promptPlay);card.appendChild(r)}
+
+  var opts=$("opts");opts.innerHTML="";
+  var choices;
+  if(L.ans==="p")choices=pinyinOptions(it.p).map(function(p){return {label:p,ok:p===it.p}});
+  else{
+    var ds=candidates(it,L,S.pool);
+    choices=shuffle([it].concat(ds)).map(function(o){return {label:L.ans==="m"?o.m:o.h,ok:o.h===it.h,item:o}});
+  }
+  S.choices=choices;
+  choices.forEach(function(c,k){
+    var b=el("button","opt"+(L.ans==="h"?" han":L.ans==="p"?" py":""));b.type="button";
+    b.appendChild(el("span","k",String(k+1)));b.appendChild(document.createTextNode(c.label));
+    b.addEventListener("click",function(){answer(k)});opts.appendChild(b);
+  });
+  $("after").hidden=true;$("after").innerHTML="";
+}
+function stat(h,ok){var s=store.stats[h]||{c:0,w:0};if(ok)s.c++;else s.w++;s.last=ok?1:0;store.stats[h]=s;save()}
+function answer(k){
+  if(S.answered)return;S.answered=true;
+  var cur=S.q[S.i],it=cur.item,c=S.choices[k],ok=c.ok;
+  var btns=$("opts").querySelectorAll(".opt");
+  btns.forEach(function(b,j){b.disabled=true;if(S.choices[j].ok)b.classList.add("right");else if(j===k)b.classList.add("wrong");else b.classList.add("dim")});
+  if(!cur.retry&&ok)S.first++;
+  stat(it.h,ok);
+  if(!ok){
+    if(S.missed.indexOf(it)<0)S.missed.push(it);
+    if(!cur.retry){var at=Math.min(S.q.length,S.i+4);S.q.splice(at,0,{item:it,retry:true})}
+  }
+  var a=$("after");a.innerHTML="";
+  var rv=el("div","reveal");
+  rv.appendChild(el("div","verdict "+(ok?"ok":"no"),ok?pick(["Right.","Correct.","Yes, that's it.","Nice."]):"Not quite. It comes back in a few questions."));
+  rv.appendChild(el("div","rh",it.h));
+  var mid=el("div");var rp=el("div","rp");rp.appendChild(pyColored(it.p));mid.appendChild(rp);mid.appendChild(el("div","rm",it.m));
+  if(it.x&&it.x!==it.h){var rx=el("div","rx",it.x);rx.appendChild(el("small",null,it.xp));mid.appendChild(rx)}
+  if(!ok&&c.item&&S.L.ans!=="p"){mid.appendChild(el("div","hint","You picked "+c.item.h+" ("+c.item.p+"): "+c.item.m))}
+  rv.appendChild(mid);
+  var pb=el("button","play");pb.type="button";pb.innerHTML=PLAY;pb.setAttribute("aria-label","Play");pb.addEventListener("click",promptPlay);rv.appendChild(pb);
+  a.appendChild(rv);
+  var nx=el("button","primary",S.i+1<S.q.length?"Next":"See results");nx.type="button";nx.style.marginTop="10px";nx.addEventListener("click",next);a.appendChild(nx);
+  a.hidden=false;
+  if(store.sound)promptPlay();
+  nx.focus({preventScroll:true});
+}
+function next(){if(!S||!S.answered)return;S.i++;if(S.i>=S.q.length)results();else ask()}
+
+function results(){
+  var r=$("results");r.innerHTML="";
+  $("fill").style.width="100%";
+  r.appendChild(el("div","label","Level "+S.L.id+" · "+S.L.name));
+  r.appendChild(el("div","score",S.first+" / "+S.firstTotal));
+  var pct=S.firstTotal?S.first/S.firstTotal:0;
+  r.appendChild(el("p",null,"Right on the first try. "+(pct>=.9?"That's solid. Do it once more, and if it holds, move up a level or widen the words.":pct>=.7?"Getting there. Run the missed ones, then try this set again.":"This set is still new. Stay on it, or drop to an easier level for a round.")));
+  if(S.missed.length){
+    r.appendChild(el("h2",null,"Missed ("+S.missed.length+")"));
+    var list=el("div","missed");
+    S.missed.forEach(function(it){
+      var row=el("div","mrow");
+      var pb=el("button","play");pb.type="button";pb.innerHTML=PLAY;pb.setAttribute("aria-label","Play "+it.h);pb.addEventListener("click",function(){speak(sayText(it))});
+      row.appendChild(pb);row.appendChild(el("span","h",it.h));var p=el("span","p");p.appendChild(pyColored(it.p));row.appendChild(p);row.appendChild(el("span","m",it.m));
+      list.appendChild(row);
+    });
+    r.appendChild(list);
+  }
+  var row=el("div","row");
+  if(S.missed.length>=1){var m=el("button","primary","Practice the missed ones");m.type="button";var missed=S.missed.slice();m.addEventListener("click",function(){start(missed)});row.appendChild(m)}
+  var again=el("button","secondary","Same set again");again.type="button";again.addEventListener("click",function(){start()});row.appendChild(again);
+  var back=el("button","secondary","Change level or words");back.type="button";back.addEventListener("click",function(){renderSetup();show("setup")});row.appendChild(back);
+  r.appendChild(row);
+  S=null;show("results");
+}
+
+$("startBtn").addEventListener("click",function(){start()});
+$("endBtn").addEventListener("click",function(){if(S){S.q=S.q.slice(0,S.i+(S.answered?1:0));S.firstTotal=S.q.filter(function(x){return !x.retry}).length;results()}});
+document.addEventListener("keydown",function(e){
+  if(!S||$("quiz").hidden)return;
+  if(e.target&&e.target.tagName==="INPUT")return;
+  if(/^[1-4]$/.test(e.key)&&!S.answered){var k=+e.key-1;if(S.choices[k]){e.preventDefault();answer(k)}}
+  else if((e.key==="Enter"||e.key===" ")&&S.answered){e.preventDefault();next()}
+  else if(e.key==="r"||e.key==="R"){promptPlay()}
+});
+
+renderSetup();
+})();
+</script>
+
+</body></html>
